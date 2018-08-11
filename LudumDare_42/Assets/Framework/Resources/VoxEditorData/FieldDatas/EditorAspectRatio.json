@@ -1,0 +1,52 @@
+{
+    "editState": 1,
+    "isArchived": false,
+    "isProduction": false,
+    "archivedBy": "",
+    "enabledInEditor": false,
+    "enabledInBuild": false,
+    "isUnfolded": false,
+    "orderInList": 1,
+    "id": "editorAspectRatio",
+    "temporaryNewID": "",
+    "tabParent": 1,
+    "customTabNumber": 0,
+    "type": 3,
+    "valueBool": false,
+    "valueColor": {
+        "r": 1.0,
+        "g": 1.0,
+        "b": 1.0,
+        "a": 1.0
+    },
+    "valueFloat": 1.3333333730697632,
+    "valueInt": 0,
+    "valueRect": {
+        "serializedVersion": "2",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0
+    },
+    "valueString": "",
+    "valueVector2": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "valueVector3": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "valueKeycode": 0,
+    "valueAnimationCurve": {
+        "serializedVersion": "2",
+        "m_Curve": [],
+        "m_PreInfinity": 2,
+        "m_PostInfinity": 2,
+        "m_RotationOrder": 4
+    },
+    "valueEnum": "",
+    "valueEnumSelected": 0,
+    "listFieldDataDebugValues": []
+}

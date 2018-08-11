@@ -1,0 +1,34 @@
+public enum EnvironmentType
+{
+    Production,
+    Test,
+    Development
+}
+
+public static partial class EnvironmentVariables
+{
+    public static EnvironmentType currentEnvironment
+    {
+        get
+        {
+#if UNITY_CLOUD_BUILD
+#if PRODUCTION_ENVIRONMENT
+    return EnvironmentType.Production;
+#elif DEVELOPMENT_ENVIRONMENT
+    return EnvironmentType.Development;
+#elif TEST_ENVIRONMENT
+    return EnvironmentType.Test;
+#endif
+#else
+#if LOCAL_Production_Environment
+    Error you are not alowed in local builds to use Production
+#elif LOCAL_Development_Environment
+    return EnvironmentType.Development;
+#elif LOCAL_Test_Environment
+    return EnvironmentType.Test;
+#endif
+    return EnvironmentType.Test;
+#endif
+        }
+    }
+}
