@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEditor;
 
 [CustomEditor(typeof(Door))]
-public class ObjectBuilderEditor : Editor
+public class DoorInspector : Editor
 {
     public override void OnInspectorGUI()
     {

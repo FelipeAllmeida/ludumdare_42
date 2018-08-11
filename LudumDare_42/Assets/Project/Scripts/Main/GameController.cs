@@ -45,6 +45,8 @@ namespace Main
                 {
                     Ground __ground = _grounds[i, j];
 
+                    if (__ground.CurrentState == Ground.State.IMMERSE) continue;
+
                     if (__ground.CurrentState == Ground.State.FLOOD_SOURCE || HaveWaterComingFromAdjacentRooms(__ground))
                         __ground.UpdateFillAmount(_waterFloodVelocity);
                 }
@@ -64,10 +66,35 @@ namespace Main
             }
         }
 
-        private bool HaveWaterComingFromAdjacentRooms(Ground p_ground)
+        private void ListenDoorEvents(Door p_door)
+        {
+            p_door.onChangeState += Door_OnChangeState;
+        }
+
+        private void Door_OnChangeState(object p_source, Door.OnChangeStateEventArgs p_eventArgs)
+        {
+            if (p_eventArgs.State == Door.State.OPEN)
+            {
+                FloodAdjacent(p_source as Wall);
+            }
+        }
+
+        public bool HaveWaterComingFromAdjacentRooms(int x, int y)
+        {
+            return HaveWaterComingFromAdjacentRooms(_grounds[x, y], true);
+        }
+
+        private bool HaveWaterComingFromAdjacentRooms(Ground p_ground, bool p_debug = false)
         {
             if (p_ground.X > 0)
             {
+                if (p_debug)
+                {
+                    Debug.Log($"Left: {_wallsVertical[p_ground.X - 1, p_ground.Y].name} is {_wallsVertical[p_ground.X - 1, p_ground.Y].Type} " +
+                    $"{((_wallsVertical[p_ground.X - 1, p_ground.Y].Type == Wall.WallType.DOOR) ? "and it's " + (_wallsVertical[p_ground.X - 1, p_ground.Y] as Door).CurrentState : string.Empty)}" +
+                    $" Adjacent Ground[{_grounds[p_ground.X - 1, p_ground.Y].X},{_grounds[p_ground.X - 1, p_ground.Y].Y}] is {_grounds[p_ground.X - 1, p_ground.Y].CurrentState}");
+                }
+
                 if (_wallsVertical[p_ground.X - 1, p_ground.Y].Type == Wall.WallType.DOOR
                     && (_wallsVertical[p_ground.X - 1, p_ground.Y] as Door).CurrentState == Door.State.OPEN)
                 {
@@ -159,6 +186,39 @@ namespace Main
                 Debug.Log($"Vertical: {_wallsVertical.GetLength(0)} - {_wallsVertical.GetLength(1)}");
                 Debug.Log($"Horizontal: {_wallsHorizontal.GetLength(0)} - {_wallsHorizontal.GetLength(1)}");
                 Debug.LogError(e);
+            }
+        }
+
+        private void FloodAdjacent(Wall p_wall)
+        {
+            Debug.Log($"Wall {((p_wall.IsHorizontal) ? "Horizontal" : "Vertical")} [{p_wall.X},{p_wall.Y}]");
+            if (p_wall.IsHorizontal)
+            {
+                if (p_wall.Y > 0 && _grounds[p_wall.X, p_wall.Y].CurrentState == Ground.State.IMMERSE)
+                {
+                    if (p_wall.Y < _grounds.GetLength(1) - 1 && _grounds[p_wall.X, p_wall.Y + 1].CurrentState == Ground.State.DRY)
+                        _grounds[p_wall.X, p_wall.Y + 1].SetFillAmount(0.01f);
+                }
+
+                if (p_wall.Y < _grounds.GetLength(1) - 1 && _grounds[p_wall.X, p_wall.Y + 1].CurrentState == Ground.State.IMMERSE)
+                {
+                    if (p_wall.Y > 0 && _grounds[p_wall.X, p_wall.Y].CurrentState == Ground.State.DRY)
+                        _grounds[p_wall.X, p_wall.Y].SetFillAmount(0.01f);
+                }
+            }
+            else
+            {
+                if (p_wall.X > 0 && _grounds[p_wall.X, p_wall.Y].CurrentState == Ground.State.IMMERSE)
+                {
+                    if (p_wall.X < _grounds.GetLength(1) - 1 && _grounds[p_wall.X + 1, p_wall.Y].CurrentState == Ground.State.DRY)
+                        _grounds[p_wall.X + 1, p_wall.Y].SetFillAmount(0.01f);
+                }
+
+                if (p_wall.X < _grounds.GetLength(1) - 1 && _grounds[p_wall.X + 1, p_wall.Y ].CurrentState == Ground.State.IMMERSE)
+                {
+                    if (p_wall.X > 0 && _grounds[p_wall.X, p_wall.Y].CurrentState == Ground.State.DRY)
+                        _grounds[p_wall.X, p_wall.Y].SetFillAmount(0.01f);
+                }
             }
         }
 
@@ -272,6 +332,12 @@ namespace Main
             }
 
             Wall __wall = Instantiate(p_isDoor ? _doorPrefab : _wallPrefab, transform).GetComponent<Wall>();
+
+            if (p_isDoor)
+            {
+                ListenDoorEvents(__wall as Door);
+            }
+
             __wall.name = $"Wall {(p_isHorizontal?"Horizontal":"Vertical")} [{p_x}][{p_y}]";
             __wall.Initialize(p_x, p_y);
             __wall.SetLocalScale(__scale);

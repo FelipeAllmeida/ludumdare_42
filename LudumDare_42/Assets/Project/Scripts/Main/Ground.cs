@@ -28,7 +28,8 @@ namespace Main
 
         #region Public Data
         public bool isFloodSource;
-        public State CurrentState { get; private set; }
+        [SerializeField] private State _currentState;
+        public State CurrentState { get { return _currentState; } }
         #endregion
 
         #region Private Data
@@ -57,8 +58,8 @@ namespace Main
                 case State.FLOODED:
                     SetFillAmount(_currentFillAmount + (Time.deltaTime * p_floodVelocity));
                     break;
-                case State.IMMERSE:
                 case State.DRY:
+                case State.IMMERSE:
                     break;
             }
         }
@@ -97,7 +98,7 @@ namespace Main
         {
             if (CurrentState == p_state) return;
 
-            CurrentState = p_state;
+            _currentState = p_state;
 
             _water.SetActive(CurrentState != State.DRY);
 
