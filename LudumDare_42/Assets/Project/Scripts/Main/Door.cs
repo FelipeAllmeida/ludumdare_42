@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 using Vox;
 
 public class Door : Wall
@@ -23,19 +24,20 @@ public class Door : Wall
     public event EventHandler<OnChangeStateEventArgs> onChangeState;
     #endregion
 
-    public State CurrentState { get; private set; } = State.OPEN;
+    [SerializeField] private State _currentState = State.OPEN;
+    public State CurrentState { get { return _currentState; } }
 
     [SerializeField] private Transform _trasformPivotDoor;
     [SerializeField] private List<Transform> _listTransformsDoor;
 
     private TweenNode _nodeOpenAnimation;
-
+    
     public override void Interact()
     {
         if (CurrentState == State.OPEN)
-            CurrentState = State.CLOSED;
+            _currentState = State.CLOSED;
         else
-            CurrentState = State.OPEN;
+            _currentState = State.OPEN;
 
         float __start = (CurrentState == State.OPEN) ? 1f : 0.2f;
         float __finish = (CurrentState == State.OPEN) ? 0.2f : 1f;
@@ -53,9 +55,7 @@ public class Door : Wall
     {
         base.SetPosition(p_position);
 
-        bool __isHorizontal = transform.localScale.x > transform.localScale.z;
-
-        if (__isHorizontal)
+        if (IsHorizontal)
         {
             _listTransformsDoor.ForEach(x => 
             {

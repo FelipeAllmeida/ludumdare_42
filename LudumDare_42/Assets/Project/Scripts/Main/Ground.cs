@@ -11,7 +11,8 @@ namespace Main
         {
             DRY,
             FLOODED,
-            IMMERSE
+            IMMERSE,
+            FLOOD_SOURCE
         }
 
         #region Events
@@ -26,7 +27,9 @@ namespace Main
         #endregion
 
         #region Public Data
-        public State CurrentState { get; private set; }
+        public bool isFloodSource;
+        [SerializeField] private State _currentState;
+        public State CurrentState { get { return _currentState; } }
         #endregion
 
         #region Private Data
@@ -40,15 +43,23 @@ namespace Main
         #endregion
 
         #region Methods
+        public override void Initialize(int p_x, int p_y)
+        {
+            base.Initialize(p_x, p_y);
+
+            if (isFloodSource) SetState(State.FLOOD_SOURCE);
+        }
+
         public void UpdateFillAmount(float p_floodVelocity)
         {
             switch(CurrentState)
             {
+                case State.FLOOD_SOURCE:
                 case State.FLOODED:
                     SetFillAmount(_currentFillAmount + (Time.deltaTime * p_floodVelocity));
                     break;
-                case State.IMMERSE:
                 case State.DRY:
+                case State.IMMERSE:
                     break;
             }
         }
@@ -57,9 +68,16 @@ namespace Main
         {
             _currentFillAmount = Mathf.Clamp01(p_fillAmount);
 
-            if (p_fillAmount >= 1) { SetState(State.IMMERSE); }
-            else if (p_fillAmount > 0 && p_fillAmount < 1) { SetState(State.FLOODED); }
-            else { SetState(State.DRY); }
+            if (CurrentState != State.FLOOD_SOURCE)
+            {
+                if (p_fillAmount >= 1) { SetState(State.IMMERSE); }
+                else if (p_fillAmount > 0 && p_fillAmount < 1) { SetState(State.FLOODED); }
+                else { SetState(State.DRY); }
+            }
+            else
+            {
+                if (p_fillAmount >= 1) { SetState(State.IMMERSE); }
+            }
 
             switch (CurrentState)
             {
@@ -67,6 +85,7 @@ namespace Main
                     break;
                 case State.FLOODED:
                 case State.IMMERSE:
+                case State.FLOOD_SOURCE:
                     _water.SetFillAmount(_currentFillAmount);
                     break;
             }
@@ -79,7 +98,7 @@ namespace Main
         {
             if (CurrentState == p_state) return;
 
-            CurrentState = p_state;
+            _currentState = p_state;
 
             _water.SetActive(CurrentState != State.DRY);
 

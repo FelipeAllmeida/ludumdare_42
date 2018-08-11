@@ -13,8 +13,10 @@ public class Wall : MapObject
     [SerializeField] private WallType _type;
     public WallType Type { get { return _type; } }
 
-	// Use this for initialization
-	void Start () {
+    public bool IsHorizontal { get { return transform.localScale.x > transform.localScale.z; } }
+
+    // Use this for initialization
+    void Start () {
 		
 	}
 	
