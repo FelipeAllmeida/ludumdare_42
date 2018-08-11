@@ -13,6 +13,7 @@ namespace Main
 
         [SerializeField] private Ground _groundPrefab;
         [SerializeField] private Wall _wallPrefab;
+        [SerializeField] private Door _doorPrefab;
 
         private Ground[,] _grounds;
         private Wall[,] _wallsHorizontal;
@@ -56,31 +57,59 @@ namespace Main
                 FloodAdjacent(p_source as Ground);
             }
         }
-
+        //horizontal 1.3
+        //vertical 0.3 ground 1.3 vertical 1.3
+        //horizontal 1.2
         private void FloodAdjacent(Ground p_ground)
         {
-            if (p_ground.X > 0)
+            try
             {
-                if (_grounds[p_ground.X - 1, p_ground.Y].CurrentState == Ground.State.DRY)
-                    _grounds[p_ground.X - 1, p_ground.Y].SetFillAmount(0.01f);
-            }
+                if (p_ground.X > 0)
+                {
+                    if (_wallsVertical[p_ground.X - 1, p_ground.Y].Type == Wall.WallType.DOOR
+                        && (_wallsVertical[p_ground.X - 1, p_ground.Y] as Door).CurrentState == Door.State.OPEN)
+                    {
+                        if (_grounds[p_ground.X - 1, p_ground.Y].CurrentState == Ground.State.DRY)
+                            _grounds[p_ground.X - 1, p_ground.Y].SetFillAmount(0.01f);
+                    }
+                }
 
-            if (p_ground.X < _mapWidth - 1)
-            {
-                if (_grounds[p_ground.X + 1, p_ground.Y].CurrentState == Ground.State.DRY)
-                    _grounds[p_ground.X + 1, p_ground.Y].SetFillAmount(0.01f);
-            }
+                if (p_ground.X <= _wallsVertical.GetLength(0) - 1)
+                {
+                    if (_wallsVertical[p_ground.X, p_ground.Y].Type == Wall.WallType.DOOR
+                        && (_wallsVertical[p_ground.X, p_ground.Y] as Door).CurrentState == Door.State.OPEN)
+                    {
+                        if (_grounds[p_ground.X + 1, p_ground.Y].CurrentState == Ground.State.DRY)
+                            _grounds[p_ground.X + 1, p_ground.Y].SetFillAmount(0.01f);
+                    }
+                }
 
-            if (p_ground.Y > 0)
-            {
-                if (_grounds[p_ground.X, p_ground.Y - 1].CurrentState == Ground.State.DRY)
-                    _grounds[p_ground.X, p_ground.Y - 1].SetFillAmount(0.01f);
-            }
+                if (p_ground.Y > 0)
+                {
+                    if (_wallsHorizontal[p_ground.X, p_ground.Y - 1].Type == Wall.WallType.DOOR
+                        && (_wallsHorizontal[p_ground.X, p_ground.Y - 1] as Door).CurrentState == Door.State.OPEN)
+                    {
+                        if (_grounds[p_ground.X, p_ground.Y - 1].CurrentState == Ground.State.DRY)
+                            _grounds[p_ground.X, p_ground.Y - 1].SetFillAmount(0.01f);
+                    }
+                }
 
-            if (p_ground.Y < _mapHeight - 1)
+                if (p_ground.Y <= _wallsHorizontal.GetLength(1) - 1)
+                {
+                    if (_wallsHorizontal[p_ground.X, p_ground.Y].Type == Wall.WallType.DOOR
+                        && (_wallsHorizontal[p_ground.X, p_ground.Y] as Door).CurrentState == Door.State.OPEN)
+                    {
+                        if (_grounds[p_ground.X, p_ground.Y + 1].CurrentState == Ground.State.DRY)
+                            _grounds[p_ground.X, p_ground.Y + 1].SetFillAmount(0.01f);
+                    }
+                }
+            }
+            catch(System.Exception e)
             {
-                if (_grounds[p_ground.X, p_ground.Y + 1].CurrentState == Ground.State.DRY)
-                    _grounds[p_ground.X, p_ground.Y + 1].SetFillAmount(0.01f);
+                Debug.Log($"x: {p_ground.X} | y: {p_ground.Y}");
+                Debug.Log($"Vertical: {_wallsVertical.GetLength(0)} - {_wallsVertical.GetLength(1)}");
+                Debug.Log($"Horizontal: {_wallsHorizontal.GetLength(0)} - {_wallsHorizontal.GetLength(1)}");
+                Debug.LogError(e);
             }
         }
 
@@ -109,13 +138,14 @@ namespace Main
                 0f,
                 GameSettings.GROUND_SIZE2 + (GameSettings.GROUND_SIZE * p_y) + (GameSettings.WALL_SIZE * p_y));
 
-            Ground __ground = Instantiate(_groundPrefab, __spawnPosition, new Quaternion(0f, 0f, 0f, 1f), transform).GetComponent<Ground>();
+            Ground __ground = Instantiate(_groundPrefab, transform).GetComponent<Ground>();
 
             ListenGroundEvents(__ground);
 
             __ground.name = $"Ground [{p_x}][{p_y}]";
             __ground.Initialize(p_x, p_y);
             __ground.SetFillAmount(p_startWithFlood ? 0.01f : 0f);
+            __ground.SetPosition(__spawnPosition);
 
 
             return __ground;
@@ -126,26 +156,46 @@ namespace Main
             _wallsHorizontal = new Wall[_mapWidth, _mapHeight - 1];
             _wallsVertical = new Wall[_mapWidth - 1, _mapHeight];
 
+            int __maxDoors = Mathf.RoundToInt(_wallsHorizontal.GetLength(0) * _wallsHorizontal.GetLength(1) * 0.95f);
+            int __doorCounter = 0;
 
             for (int i = 0; i < _wallsHorizontal.GetLength(0); i++)
             {
                 for (int j = 0; j < _wallsHorizontal.GetLength(1); j ++)
                 {
-                    _wallsHorizontal[i, j] = CreateWall(i, j, true);
+                    bool __hasDoor = false;
+
+                    if (__doorCounter < __maxDoors && Random.Range(0, 1) == 0)
+                    {
+                        __doorCounter++;
+                        __hasDoor = true;
+                    }
+
+                    _wallsHorizontal[i, j] = CreateWall(i, j, true, __hasDoor);
                 }
             }
 
+            __maxDoors = Mathf.RoundToInt(_wallsVertical.GetLength(0) * _wallsVertical.GetLength(1) * 0.95f);
+             __doorCounter = 0;
             for (int i = 0; i < _wallsVertical.GetLength(0); i++)
             {
                 for (int j = 0; j < _wallsVertical.GetLength(1); j++)
                 {
-                    _wallsVertical[i, j] = CreateWall(i, j, false);
+                    bool __hasDoor = false;
+
+                    if (__doorCounter < __maxDoors && Random.Range(0, 1) == 0)
+                    {
+                        __doorCounter++;
+                        __hasDoor = true;
+                    }
+
+                    _wallsVertical[i, j] = CreateWall(i, j, false, __hasDoor);
                 }
             }
 
         }
 
-        private Wall CreateWall(int p_x, int p_y, bool p_isHorizontal)
+        private Wall CreateWall(int p_x, int p_y, bool p_isHorizontal, bool p_isDoor)
         {
             Vector3 __spawnPosition;
             Vector3 __scale;
@@ -169,10 +219,11 @@ namespace Main
                 __scale = new Vector3(1f, 5f, GameSettings.WALL_WIDTH);
             }
 
-            Wall __wall = Instantiate(_wallPrefab, __spawnPosition, new Quaternion(0f, 0f, 0f, 1f), transform).GetComponent<Wall>();
+            Wall __wall = Instantiate(p_isDoor ? _doorPrefab : _wallPrefab, transform).GetComponent<Wall>();
             __wall.name = $"Wall {(p_isHorizontal?"Horizontal":"Vertical")} [{p_x}][{p_y}]";
             __wall.Initialize(p_x, p_y);
-            __wall.transform.localScale = __scale;
+            __wall.SetLocalScale(__scale);
+            __wall.SetPosition(__spawnPosition);
 
             return __wall;
         }

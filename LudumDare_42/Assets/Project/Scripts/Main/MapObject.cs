@@ -11,13 +11,18 @@ public abstract class MapObject : MonoBehaviour
         Y = p_y;
     }
 
-    public virtual void SetLocalScale(Vector3 p_localScale)
+    public virtual void Interact()
     {
 
     }
 
+    public virtual void SetLocalScale(Vector3 p_localScale)
+    {
+        transform.localScale = p_localScale;
+    }
+
     public virtual void SetPosition(Vector3 p_position)
     {
-
+        transform.position = p_position;
     }
 }
