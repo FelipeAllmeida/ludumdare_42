@@ -9,10 +9,10 @@ namespace Main
     {
         public enum State
         {
-            FLOOD_SOURCE,
             DRY,
             FLOODED,
-            IMMERSE
+            IMMERSE,
+            FLOOD_SOURCE
         }
 
         #region Events
@@ -46,7 +46,7 @@ namespace Main
         {
             base.Initialize(p_x, p_y);
 
-            if (isFloodSource) CurrentState = State.FLOOD_SOURCE;
+            if (isFloodSource) SetState(State.FLOOD_SOURCE);
         }
 
         public void UpdateFillAmount(float p_floodVelocity)

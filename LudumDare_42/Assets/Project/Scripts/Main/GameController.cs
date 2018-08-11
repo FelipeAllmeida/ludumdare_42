@@ -45,7 +45,7 @@ namespace Main
                 {
                     Ground __ground = _grounds[i, j];
 
-                    if (HaveWaterComingFromAdjacentRooms(__ground))
+                    if (__ground.CurrentState == Ground.State.FLOOD_SOURCE || HaveWaterComingFromAdjacentRooms(__ground))
                         __ground.UpdateFillAmount(_waterFloodVelocity);
                 }
             }
@@ -193,6 +193,8 @@ namespace Main
 
             __ground.name = $"Ground [{p_x}][{p_y}]";
             __ground.isFloodSource = p_startWithFlood;
+            if (__ground.isFloodSource)
+                Debug.Log($"Flood Source Ground [{p_x}][{p_y}]");
             __ground.Initialize(p_x, p_y);
             __ground.SetFillAmount(0f);
             __ground.SetPosition(__spawnPosition);
