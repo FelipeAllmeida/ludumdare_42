@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 using Vox;
 
 public class Door : Wall
@@ -23,13 +24,14 @@ public class Door : Wall
     public event EventHandler<OnChangeStateEventArgs> onChangeState;
     #endregion
 
+
     public State CurrentState { get; private set; } = State.OPEN;
 
     [SerializeField] private Transform _trasformPivotDoor;
     [SerializeField] private List<Transform> _listTransformsDoor;
 
     private TweenNode _nodeOpenAnimation;
-
+    
     public override void Interact()
     {
         if (CurrentState == State.OPEN)

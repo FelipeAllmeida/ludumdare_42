@@ -39,9 +39,15 @@ namespace Main
 
         private void UpdateMap()
         {
-            foreach (Ground __ground in _grounds)
+            for (int i = 0; i < _grounds.GetLength(0); i++)
             {
-                __ground.UpdateFillAmount(_waterFloodVelocity);
+                for (int j = 0; j < _grounds.GetLength(1); j++) 
+                {
+                    Ground __ground = _grounds[i, j];
+
+                    if (HaveWaterComingFromAdjacentRooms(__ground))
+                        __ground.UpdateFillAmount(_waterFloodVelocity);
+                }
             }
         }
 
@@ -57,9 +63,52 @@ namespace Main
                 FloodAdjacent(p_source as Ground);
             }
         }
-        //horizontal 1.3
-        //vertical 0.3 ground 1.3 vertical 1.3
-        //horizontal 1.2
+
+        private bool HaveWaterComingFromAdjacentRooms(Ground p_ground)
+        {
+            if (p_ground.X > 0)
+            {
+                if (_wallsVertical[p_ground.X - 1, p_ground.Y].Type == Wall.WallType.DOOR
+                    && (_wallsVertical[p_ground.X - 1, p_ground.Y] as Door).CurrentState == Door.State.OPEN)
+                {
+                    if (_grounds[p_ground.X - 1, p_ground.Y].CurrentState != Ground.State.DRY)
+                        return true;
+                }
+            }
+
+            if (p_ground.X <= _wallsVertical.GetLength(0) - 1)
+            {
+                if (_wallsVertical[p_ground.X, p_ground.Y].Type == Wall.WallType.DOOR
+                    && (_wallsVertical[p_ground.X, p_ground.Y] as Door).CurrentState == Door.State.OPEN)
+                {
+                    if (_grounds[p_ground.X + 1, p_ground.Y].CurrentState != Ground.State.DRY)
+                        return true;
+                }
+            }
+
+            if (p_ground.Y > 0)
+            {
+                if (_wallsHorizontal[p_ground.X, p_ground.Y - 1].Type == Wall.WallType.DOOR
+                    && (_wallsHorizontal[p_ground.X, p_ground.Y - 1] as Door).CurrentState == Door.State.OPEN)
+                {
+                    if (_grounds[p_ground.X, p_ground.Y - 1].CurrentState != Ground.State.DRY)
+                        return true;
+                }
+            }
+
+            if (p_ground.Y <= _wallsHorizontal.GetLength(1) - 1)
+            {
+                if (_wallsHorizontal[p_ground.X, p_ground.Y].Type == Wall.WallType.DOOR
+                    && (_wallsHorizontal[p_ground.X, p_ground.Y] as Door).CurrentState == Door.State.OPEN)
+                {
+                    if (_grounds[p_ground.X, p_ground.Y + 1].CurrentState != Ground.State.DRY)
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
         private void FloodAdjacent(Ground p_ground)
         {
             try
@@ -143,8 +192,9 @@ namespace Main
             ListenGroundEvents(__ground);
 
             __ground.name = $"Ground [{p_x}][{p_y}]";
+            __ground.isFloodSource = p_startWithFlood;
             __ground.Initialize(p_x, p_y);
-            __ground.SetFillAmount(p_startWithFlood ? 0.01f : 0f);
+            __ground.SetFillAmount(0f);
             __ground.SetPosition(__spawnPosition);
 
 
@@ -165,7 +215,7 @@ namespace Main
                 {
                     bool __hasDoor = false;
 
-                    if (__doorCounter < __maxDoors && Random.Range(0, 1) == 0)
+                    if (__doorCounter < __maxDoors && Random.Range(0, 2) <= 1)
                     {
                         __doorCounter++;
                         __hasDoor = true;
@@ -183,7 +233,7 @@ namespace Main
                 {
                     bool __hasDoor = false;
 
-                    if (__doorCounter < __maxDoors && Random.Range(0, 1) == 0)
+                    if (__doorCounter < __maxDoors && Random.Range(0, 2) <= 1)
                     {
                         __doorCounter++;
                         __hasDoor = true;
