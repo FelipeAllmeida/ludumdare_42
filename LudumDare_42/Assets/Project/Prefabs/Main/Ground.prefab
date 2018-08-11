@@ -175,6 +175,7 @@ GameObject:
   - component: {fileID: 4301745856279522}
   - component: {fileID: 33479865630591420}
   - component: {fileID: 23347955270936990}
+  - component: {fileID: 114312692964138564}
   m_Layer: 0
   m_Name: Ground
   m_TagString: Untagged
@@ -611,6 +612,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   reflection: {fileID: 114180858491076354}
   waterBase: {fileID: 114541241526938206}
+--- !u!114 &114312692964138564
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1992341934752974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e038bf700cfa444fb16c6ef963be9f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114377886164984270
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -659,6 +671,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 094d7a12e46453b4f81b70f2546db928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isFloodSource: 0
+  _currentState: 0
   _startFillAmount: 0
   _water: {fileID: 114377886164984270}
 --- !u!114 &114541241526938206

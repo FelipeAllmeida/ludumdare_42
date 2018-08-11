@@ -37,6 +37,7 @@ GameObject:
   - component: {fileID: 4664023383530406}
   - component: {fileID: 33708674601333464}
   - component: {fileID: 23657174380576720}
+  - component: {fileID: 114463669467361600}
   m_Layer: 0
   m_Name: Wall_1
   m_TagString: Untagged
@@ -54,6 +55,7 @@ GameObject:
   - component: {fileID: 4896990156106706}
   - component: {fileID: 33717066650929794}
   - component: {fileID: 23764511543343390}
+  - component: {fileID: 114499524111898518}
   m_Layer: 0
   m_Name: Wall_0
   m_TagString: Untagged
@@ -71,6 +73,7 @@ GameObject:
   - component: {fileID: 4588014211910082}
   - component: {fileID: 33051316017778822}
   - component: {fileID: 23930106171200992}
+  - component: {fileID: 114960926010058162}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -297,8 +300,42 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _type: 1
+  _currentState: 0
   _trasformPivotDoor: {fileID: 4161381257573474}
   _listTransformsDoor:
   - {fileID: 4896990156106706}
   - {fileID: 4588014211910082}
   - {fileID: 4664023383530406}
+--- !u!114 &114463669467361600
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1117054974785358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e038bf700cfa444fb16c6ef963be9f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &114499524111898518
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1348019286352542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e038bf700cfa444fb16c6ef963be9f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &114960926010058162
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1507300728403594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e038bf700cfa444fb16c6ef963be9f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
