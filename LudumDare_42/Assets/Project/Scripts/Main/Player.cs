@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using Internal;
 using UnityEngine.AI;
+using Internal.Commands;
 
 namespace Main
 {
     public class Player : MonoBehaviour
     {
-        private CommandController _commandController;
+        private CommandQuery _commandQuery;
         private InputManager _inputManager;
 
         [SerializeField] private Camera _mainCamera;
         [SerializeField] private Unit _unit;
 
+        [Range(0f, 1f)]
         [SerializeField] private float _cameraSpeed = 0.05f;
 
 	    // Use this for initialization
@@ -26,27 +28,27 @@ namespace Main
         // Update is called once per frame
         void Update ()
         {
-            _commandController.UpdateCommands();
+            _commandQuery.UpdateQuery();
             _inputManager?.CheckInput();
 
             Vector3 __cameraMoveOffset = Vector3.zero;
 
             if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
             {
-                __cameraMoveOffset.z += _cameraSpeed * Time.deltaTime;
+                __cameraMoveOffset.z += _cameraSpeed * 100f * Time.deltaTime;
             }
             else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
             {
-                __cameraMoveOffset.z -= _cameraSpeed * Time.deltaTime;
+                __cameraMoveOffset.z -= _cameraSpeed * 100f * Time.deltaTime;
             }
 
             if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
             {
-                __cameraMoveOffset.x -= _cameraSpeed * Time.deltaTime;
+                __cameraMoveOffset.x -= _cameraSpeed * 100f * Time.deltaTime;
             }
             else if(Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
             {
-                __cameraMoveOffset.x += _cameraSpeed * Time.deltaTime;
+                __cameraMoveOffset.x += _cameraSpeed * 100f * Time.deltaTime;
             }
 
             _mainCamera.transform.position += __cameraMoveOffset;
@@ -55,7 +57,7 @@ namespace Main
         #region Internal
         private void InitializeCommandController()
         {
-            _commandController = new CommandController();
+            _commandQuery = new CommandQuery();
         }
 
         private void InitializeInputManager()
@@ -78,8 +80,9 @@ namespace Main
 
         private void InputManager_OnMouseRightClick(InputInfo p_inputInfo)
         {
-            _commandController.StopCurrentCommand();
-            _commandController.MoveTo(_unit, p_inputInfo.worldClickPoint);
+            _commandQuery.ClearQuery();
+            _commandQuery.AddCommand(new MoveCommand(_unit, p_inputInfo.worldClickPoint));
+            _commandQuery.Run();
         }
         #endregion
     }
