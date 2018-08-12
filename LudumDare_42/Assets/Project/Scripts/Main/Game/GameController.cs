@@ -20,6 +20,8 @@ namespace Main.Game
 
         [SerializeField] private int _mapWidth;
         [SerializeField] private int _mapHeight;
+        [SerializeField] private int _floodSourceX;
+        [SerializeField] private int _floodSourceY;
 
         [Header("Prefabs")]
         [SerializeField] private Door _doorPrefab;
@@ -243,14 +245,11 @@ namespace Main.Game
 
             int __floodStartX, __floodStartY;
 
-            __floodStartX = UnityEngine.Random.Range(0, _mapWidth - 1);
-            __floodStartY = UnityEngine.Random.Range(0, _mapHeight - 1);
-
             for (int i = 0; i < _mapWidth; i++)
             {
                 for (int j = 0; j < _mapHeight; j++)
                 {
-                    _grounds[i, j] = CreateGround(i, j, (__floodStartX == i && __floodStartY == j));
+                    _grounds[i, j] = CreateGround(i, j, (_floodSourceX == i && _floodSourceY == j));
                 }
             }
         }
