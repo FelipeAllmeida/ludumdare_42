@@ -6,16 +6,20 @@ namespace Main
 {
     public class GameController : MonoBehaviour
     {
+        [Header("Game Configuration")]
         [SerializeField] private float _waterFloodVelocity = 0.05f;
 
         [SerializeField] private int _mapWidth;
         [SerializeField] private int _mapHeight;
 
-        [SerializeField] private Ground _groundPrefab;
-        [SerializeField] private Wall _wallPrefab;
+        [Header("Prefabs")]
         [SerializeField] private Door _doorPrefab;
+        [SerializeField] private Ground _groundPrefab;
+        [SerializeField] private Player _playerPrefab;
+        [SerializeField] private Wall _wallPrefab;
 
         private Ground[,] _grounds;
+        private Player _player;
         private Wall[,] _wallsHorizontal;
         private Wall[,] _wallsVertical;
 
@@ -23,6 +27,7 @@ namespace Main
         void Start()
         {
             CreateMap();
+            CreatePlayer();
         }
 
         // Update is called once per frame
@@ -81,20 +86,13 @@ namespace Main
 
         public bool HaveWaterComingFromAdjacentRooms(int x, int y)
         {
-            return HaveWaterComingFromAdjacentRooms(_grounds[x, y], true);
+            return HaveWaterComingFromAdjacentRooms(_grounds[x, y]);
         }
 
-        private bool HaveWaterComingFromAdjacentRooms(Ground p_ground, bool p_debug = false)
+        private bool HaveWaterComingFromAdjacentRooms(Ground p_ground)
         {
             if (p_ground.X > 0)
             {
-                if (p_debug)
-                {
-                    Debug.Log($"Left: {_wallsVertical[p_ground.X - 1, p_ground.Y].name} is {_wallsVertical[p_ground.X - 1, p_ground.Y].Type} " +
-                    $"{((_wallsVertical[p_ground.X - 1, p_ground.Y].Type == Wall.WallType.DOOR) ? "and it's " + (_wallsVertical[p_ground.X - 1, p_ground.Y] as Door).CurrentState : string.Empty)}" +
-                    $" Adjacent Ground[{_grounds[p_ground.X - 1, p_ground.Y].X},{_grounds[p_ground.X - 1, p_ground.Y].Y}] is {_grounds[p_ground.X - 1, p_ground.Y].CurrentState}");
-                }
-
                 if (_wallsVertical[p_ground.X - 1, p_ground.Y].Type == Wall.WallType.DOOR
                     && (_wallsVertical[p_ground.X - 1, p_ground.Y] as Door).CurrentState == Door.State.OPEN)
                 {
@@ -191,7 +189,6 @@ namespace Main
 
         private void FloodAdjacent(Wall p_wall)
         {
-            Debug.Log($"Wall {((p_wall.IsHorizontal) ? "Horizontal" : "Vertical")} [{p_wall.X},{p_wall.Y}]");
             if (p_wall.IsHorizontal)
             {
                 if (p_wall.Y > 0 && _grounds[p_wall.X, p_wall.Y].CurrentState == Ground.State.IMMERSE)
@@ -220,6 +217,12 @@ namespace Main
                         _grounds[p_wall.X, p_wall.Y].SetFillAmount(0.01f);
                 }
             }
+        }
+
+        private void CreatePlayer()
+        {
+            Vector3 __spawnPosition = new Vector3(GameSettings.GROUND_SIZE2, 1, GameSettings.GROUND_SIZE2);
+            _player = Instantiate(_playerPrefab, __spawnPosition, Quaternion.identity, transform).GetComponent<Player>();
         }
 
         private void CreateGrounds()

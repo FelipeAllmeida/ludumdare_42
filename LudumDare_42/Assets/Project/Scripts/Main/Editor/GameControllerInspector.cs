@@ -16,6 +16,10 @@ namespace Main
 
             GameController myScript = (GameController)target;
 
+            EditorGUILayout.Space();
+
+            EditorGUILayout.LabelField("Debug Options", EditorStyles.boldLabel);
+
             _targetX = EditorGUILayout.IntField(new GUIContent("X"), _targetX);
             _targetY = EditorGUILayout.IntField(new GUIContent("Y"), _targetY);
 
