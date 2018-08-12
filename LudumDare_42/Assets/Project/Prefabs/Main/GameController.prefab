@@ -65,3 +65,15 @@ MonoBehaviour:
   - spawnPercentage: 1
     spawnObject: {fileID: 1005728834305692, guid: a759adf157da32741bf561b7020efac9,
       type: 2}
+  - spawnPercentage: 0.8
+    spawnObject: {fileID: 1005728834305692, guid: 88aced5c3167a2f48a22125cce909682,
+      type: 2}
+  - spawnPercentage: 0.4
+    spawnObject: {fileID: 1909238070135496, guid: 85ad1f21a86c6b84eb25331a2a05a02f,
+      type: 2}
+  - spawnPercentage: 0.5
+    spawnObject: {fileID: 1297961932586474, guid: 70fef1d2e7e44584599b84093c625f30,
+      type: 2}
+  - spawnPercentage: 0.7
+    spawnObject: {fileID: 1483804636868130, guid: aebdd5d1d553a764986966bb723278ca,
+      type: 2}
