@@ -14,7 +14,6 @@ namespace Main
 
         [Header("References")]
         [SerializeField] private Canvas _gameCanvas;
-        [SerializeField] private InteractionMenu _interactionMenu;
 
         [Header("Prefabs")]
         [SerializeField] private Door _doorPrefab;
@@ -32,8 +31,6 @@ namespace Main
         {
             CreateMap();
             CreatePlayer();
-
-            _interactionMenu.SetCamera(_player.Camera);
         }
 
         // Update is called once per frame

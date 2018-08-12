@@ -4,24 +4,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Internal
+namespace Internal.Commands
 {
-    public class MoveCommand : Command 
+    public class MoveCommand : Command
     {
-        public MoveCommand(Unit p_actor, Vector3 p_targetPosition, Action p_callbackFinish = null, Action p_callbackStopped = null)
+        public MoveCommand(Unit p_actor, Vector3 p_targetPosition, EventHandler<CommandCallbackEventArgs> p_callbackFinish = null, EventHandler<CommandCallbackEventArgs> p_callbackStopped = null)
+            : base(Commands.MOVE)
         {
             _actor = p_actor;
             _targetPosition = p_targetPosition;
-            onCommandFinish = p_callbackFinish;
-            onCommandStopped = p_callbackStopped;
+            CallbackFinish += p_callbackFinish;
+            CallbackStopped += p_callbackStopped;
         }
 
-        public override CommandType Execute()
+        private Unit _actor;
+
+        private Vector3 _previousPosition;
+        private Vector3 _targetPosition;
+
+        public override Commands Execute()
         {
             _previousPosition = _actor.transform.position;
 
             _actor.GetNavMeshAgent().destination = _targetPosition;
-            return CommandType.MOVE;
+            return Commands.MOVE;
         }
 
         public void SetDestination(Vector3 p_destination)
@@ -32,16 +38,11 @@ namespace Internal
 
         public override void AUpdate()
         {
-            if (_actor == null)
-            {
-                Stop();
-                return;
-            }
+            if (_actor == null) return;
 
             bool _isInsideRange = false;
             if (_actor.GetNavMeshAgent().pathPending == true)
             {
-        
                 if ((Vector3.Distance(_previousPosition, _targetPosition)) < _actor.Range)
                 {
                     _isInsideRange = true;
@@ -57,7 +58,7 @@ namespace Internal
 
             if (_isInsideRange == true)
             {
-                onCommandFinish?.Invoke();
+                Finish();
             }
         }
 
@@ -67,9 +68,8 @@ namespace Internal
             {
                 _actor.GetNavMeshAgent().isStopped = true;
                 _actor.GetNavMeshAgent().ResetPath();
-                _actor = null;  
             }
-            onCommandFinish = null;
+
             base.Stop();
         }
 
@@ -77,11 +77,5 @@ namespace Internal
         {
             _actor.GetNavMeshAgent().destination = _previousPosition;
         }
-
-        private Unit _actor;
-
-        private Vector3 _previousPosition;
-        private Vector3 _targetPosition;
-
     }
 }

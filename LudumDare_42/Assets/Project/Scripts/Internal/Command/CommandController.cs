@@ -2,88 +2,88 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-namespace Internal
+namespace Internal.Commands
 {
-
-    public enum CommandType
+    public enum Commands
     {
         NONE,
-        MOVE,
-        GATHER,
-        ATTACK,
-        BUILD,
         STOP,
-        RANGED_ATTACK
+        MOVE
     }
 
-    public class CommandController
+    public class CommandQuery
     {
+        public CommandQuery()
+        {
+            _listCommands = new List<Command>();
+        }
+
         #region Events
         public Action onCurrentCommandFinish;
         #endregion
 
-        private CommandType _currentCommand;
+        [SerializeField] private List<Command> _listCommands;
 
-        private Command _command;
-
-        public void AInitialize()
+        public void UpdateQuery()
         {
-        }
-
-        public void UpdateCommands()
-        {
-            if (_command != null)
+            if (_listCommands.Count > 0)
             {
-                _command.AUpdate();
+                _listCommands[0]?.AUpdate();
             }
         }
 
-        public void MoveTo(Unit p_actor, Vector3 p_targetPosition)
+        public void ClearQuery()
         {
-            _command = new MoveCommand(p_actor, p_targetPosition, onCurrentCommandFinish, ClearCurrentCommand);
-            _currentCommand = _command.Execute();
-        }
-
-        public void UpdateMoveDestination(Vector3 p_targetPosition)
-        {
-            if (_command != null && _command is MoveCommand)
+            if (_listCommands.Count > 0)
             {
-                (_command as MoveCommand).SetDestination(p_targetPosition);
-            }
-            else
-            {
-                if (_command != null)
-                {
-                    Debug.LogWarning(string.Format("{0} is not a Move Command", _currentCommand));
-                }
-            }
-        }
-
-        public CommandType GetCurrentCommand()
-        {
-            return _currentCommand;
-        }
-
-        public void StopCurrentCommand()
-        {
-            if (_command != null)
-            {
-                _command.Stop();
+                _listCommands[0]?.Stop();
             }
 
-            ClearCurrentCommand();
+            _listCommands.Clear();
         }
 
-        private void ClearCurrentCommand()
+        public void AddCommand(Command p_command)
         {
-            onCurrentCommandFinish = null;
+            p_command.CallbackFinish += Command_Callback;
+            p_command.CallbackStopped += Command_Callback;
 
-            _command = null;
+            _listCommands.Add(p_command);
 
-            _currentCommand = CommandType.NONE;
+            if (_listCommands.Count == 1) RunNext();
         }
+
+        public Commands GetCurrentCommand()
+        {
+            return _listCommands.Count > 0 ? _listCommands[0].CommandType : Commands.NONE;
+        }
+
+        #region Internal
+        private void RunNext()
+        {
+            if (_listCommands.Count > 0 && _listCommands[0].CurrentState == Command.State.OnQuery)
+            {
+                _listCommands[0].Execute();
+            }
+        }
+
+        private void RemoveCommand(Command p_command)
+        {
+            _listCommands.Remove(p_command);
+        }
+
+        private void Command_Callback(object p_source, CommandCallbackEventArgs p_args)
+        {
+            RemoveCommand(p_args.Command);
+
+            if (p_args.Command.CurrentState == Command.State.Finished)
+            {
+                RunNext();
+            }
+        }
+        #endregion
     }
 
 }

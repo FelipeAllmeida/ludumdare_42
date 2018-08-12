@@ -4,15 +4,17 @@ using UnityEngine;
 using Internal;
 using UnityEngine.AI;
 using Vox;
+using Internal.Commands;
 
 namespace Main
 {
     public class Player : MonoBehaviour
     {
-        private CommandController _commandController;
+        private CommandQuery _commandQuery;
         private InputManager _inputManager;
 
         [SerializeField] private Camera _mainCamera;
+        [SerializeField] private InteractionMenu _interactionMenu;
         [SerializeField] private Unit _unit;
 
         [SerializeField] private float _cameraSpeed = 0.05f;
@@ -24,21 +26,28 @@ namespace Main
         {
             InitializeCommandController();
             InitializeInputManager();
+            InitializeInteractionMenu();
         }
 
         // Update is called once per frame
         void Update ()
         {
-            _commandController.UpdateCommands();
+            _commandQuery.UpdateQuery();
             _inputManager?.CheckInput();
 
             CheckCameraInputs();
         }
 
         #region Internal
+        private void InitializeInteractionMenu()
+        {
+            _interactionMenu.SetCamera(Camera);
+            ListenInteractionMenuEvents(_interactionMenu);
+        }
+
         private void InitializeCommandController()
         {
-            _commandController = new CommandController();
+            _commandQuery = new CommandQuery();
         }
 
         private void InitializeInputManager()
@@ -46,6 +55,26 @@ namespace Main
             _inputManager = new InputManager();
 
             ListenInputManagerEvents(_inputManager);
+        }
+
+        private void ListenInteractionMenuEvents(InteractionMenu p_interactionMenu)
+        {
+            p_interactionMenu.onClickAction += InteractionMenu_OnClickAction;
+        }
+
+        private void InteractionMenu_OnClickAction(object p_source, OnClickActionEventArgs p_args)
+        {
+            switch(p_args.ObjectAction)
+            {
+                case ObjectAction.Interact:
+                    _commandQuery.AddCommand(new MoveCommand(_unit, p_args.MapObject.transform.position, (object p_commandSource, CommandCallbackEventArgs p_commandArgs) =>
+                    {
+                        p_args.MapObject.Interact();
+                    }));
+                    break;
+                case ObjectAction.Cancel:
+                    break;
+            }
         }
 
         private void ListenInputManagerEvents(InputManager p_inputManager)
@@ -56,13 +85,20 @@ namespace Main
 
         private void InputManager_OnMouseLeftClick(InputInfo p_inputInfo)
         {
-
+            if (_interactionMenu.IsOpen == false)
+            {
+                MapObject __mapObject = p_inputInfo.hit.GetComponent<MapObject>();
+                if ((IActor)__mapObject != null)
+                {
+                    _interactionMenu.Open(__mapObject);
+                }
+            }
         }
 
         private void InputManager_OnMouseRightClick(InputInfo p_inputInfo)
         {
-            _commandController.StopCurrentCommand();
-            _commandController.MoveTo(_unit, p_inputInfo.worldClickPoint);
+            _commandQuery.ClearQuery();
+            _commandQuery.AddCommand(new MoveCommand(_unit, p_inputInfo.worldClickPoint));
         }
 
         private void CheckCameraInputs()

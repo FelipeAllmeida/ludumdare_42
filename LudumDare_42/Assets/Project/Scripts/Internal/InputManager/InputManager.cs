@@ -107,7 +107,7 @@ namespace Internal
                 UpdateInputInfo(p_inputID, out _isAllowedLayer);
                 if (p_inputID == 1)
                 {
-                    if (onMouseRightClick != null) onMouseRightClick(_dictInputs[1]);
+                    onMouseRightClick?.Invoke(_dictInputs[1]);
                 }
             }
             else if (p_phase == GesturePhaseType.START)
@@ -120,11 +120,11 @@ namespace Internal
                     if (_isAllowedLayer == false) return;
                     if (p_inputID == 0)
                     {
-                        if (onMouseLeftClick != null) onMouseLeftClick(__inputInfo);
+                        onMouseLeftClick?.Invoke(__inputInfo);
                     }
                     else if (p_inputID == 1)
                     {
-                        if (onMouseRightClick != null) onMouseRightClick(__inputInfo);
+                        onMouseRightClick?.Invoke(__inputInfo);
                     }
                 }
             }
@@ -139,7 +139,8 @@ namespace Internal
 
             if (Physics.Raycast(__ray, out __raycastHit, 100f, ~(1 << LayerMask.NameToLayer("RangeCollider"))))
             {
-                Debug.DrawLine(__ray.origin, __raycastHit.point);
+                Debug.DrawRay(Camera.main.transform.position, __ray.direction * 50, Color.green, 1f);
+
                 if (__raycastHit.collider.gameObject.layer == 0 || __raycastHit.collider.gameObject.layer == 9)
                 {
                     p_isInputAllowed = true;

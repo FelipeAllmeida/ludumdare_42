@@ -413,6 +413,8 @@ MonoBehaviour:
   _waterFloodVelocity: 0.05
   _mapWidth: 10
   _mapHeight: 5
+  _gameCanvas: {fileID: 0}
+  _interactionMenu: {fileID: 1426915673}
   _doorPrefab: {fileID: 114156200628983146, guid: 1e7438fa71bb27a40aef3b27c4f44afe,
     type: 2}
   _groundPrefab: {fileID: 114517371291406346, guid: a759adf157da32741bf561b7020efac9,
@@ -440,7 +442,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1426915670}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 02762e8ecf15a814a850924f809867a4, type: 3}
   m_Name: 
@@ -448,7 +450,8 @@ MonoBehaviour:
   _view: {fileID: 0}
   _menuCanvas: {fileID: 903908324}
   _menuPanel: {fileID: 837891715}
-  _menuButton: {fileID: 0}
+  _menuButton: {fileID: 114779632574450914, guid: 5140a5ced0f850d4691e9a78f7e58876,
+    type: 2}
 --- !u!1 &2086338751
 GameObject:
   m_ObjectHideFlags: 0

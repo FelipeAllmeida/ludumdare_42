@@ -7,114 +7,103 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+using Vox;
 
-public class InteractionMenu : MonoBehaviour
+namespace Main
 {
-    [SerializeField] private Camera _view;
+    public class OnClickActionEventArgs : EventArgs
+    {
+        public OnClickActionEventArgs(ObjectAction p_objectAction, MapObject p_mapObject)
+        { ObjectAction = p_objectAction;  MapObject = p_mapObject; }
 
-    [SerializeField] private RectTransform _menuCanvas;
-    [SerializeField] private RectTransform _menuPanel;
+        public ObjectAction ObjectAction { get; private set; }
+        public MapObject MapObject { get; private set; }
+    }
 
-    [SerializeField] private Button _menuButton;
+    public class InteractionMenu : MonoBehaviour
+    {
+        public event EventHandler<OnClickActionEventArgs> onClickAction;
 
-	void Update ()
-	{
-        if (_view == null) return;
+        [SerializeField] private Camera _view;
 
-	    Color __debugColor = Color.red;
+        [SerializeField] private RectTransform _menuCanvas;
+        [SerializeField] private RectTransform _menuPanel;
 
-	    RaycastHit __hit;
+        [SerializeField] private Button _menuButton;
 
-	    Ray __mouseRay = _view.ScreenPointToRay(Input.mousePosition);
+        private TimerNode _nodeClose;
 
-	    if (Physics.Raycast(__mouseRay, out __hit))
-	    {
-	        __debugColor = Color.green;
+        public bool IsOpen { get; private set; }
 
-	        if (Input.GetKeyDown(KeyCode.Mouse0))
-	        {
-	            HandleMapObjectInteraction(__hit);
-	        }
-            else
+        public void SetCamera(Camera p_camera)
+        {
+            _view = p_camera;
+            _menuCanvas.GetComponent<Canvas>().worldCamera = p_camera;
+        }
+
+        public void Close()
+        {
+            ActivateContextMenu(false);
+        }
+
+        public void Open(MapObject p_object)
+        {
+            _nodeClose?.Cancel();
+
+            foreach (GameObject __child in _menuPanel.GetComponentsInChildren<RectTransform>().Select(c => c.gameObject).Except(new[] { _menuPanel.gameObject }))
             {
-                _menuPanel.gameObject.SetActive(false);
+                Destroy(__child);
             }
-	    }
 
-        Debug.DrawRay(_view.transform.position, __mouseRay.direction * 50, __debugColor, 1f);
-	}
+            _menuPanel.DetachChildren();
 
-    private void HandleMapObjectInteraction(RaycastHit p_hit)
-    {   
-        MapObject __hitObject = p_hit.collider.GetComponent<MapObject>();
+            Vector2 __point;
 
-        if ((IActor)__hitObject != null)
-        {
-            BuildContextMenu(__hitObject);
-            //__hitObject.Interact();
-        }
-    }
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(_menuCanvas, Input.mousePosition, _view, out __point);
 
-    internal void SetCamera(Camera p_camera)
-    {
-        _view = p_camera;
-        _menuCanvas.GetComponent<Canvas>().worldCamera = p_camera;
-    }
+            _menuPanel.position = _menuCanvas.TransformPoint(__point);
 
-    private void BuildContextMenu(MapObject p_obect)
-    {
-        foreach (GameObject __child in _menuPanel.GetComponentsInChildren<RectTransform>().Select(c => c.gameObject).Except(new [] {_menuPanel.gameObject}))
-        {
-            Destroy(__child);
-        }
+            IActor __actions = p_object as IActor;
 
-        _menuPanel.DetachChildren();
+            Vector2 __buttonSize = _menuButton.GetComponent<RectTransform>().sizeDelta;
 
-        Vector2 __point;
+            _menuPanel.sizeDelta = new Vector2(_menuPanel.sizeDelta.x, __buttonSize.y * __actions.ActionsList.Count);
 
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(_menuCanvas, Input.mousePosition, _view, out __point);
-
-        _menuPanel.position = _menuCanvas.TransformPoint(__point);
-
-        IActor __actions = p_obect as IActor;
-
-        Vector2 __buttonSize = _menuButton.GetComponent<RectTransform>().sizeDelta;
-
-        _menuPanel.sizeDelta = new Vector2(_menuPanel.sizeDelta.x, __buttonSize.y * __actions.ActionsList.Count);
-
-        __actions.ActionsList.Select(a =>
-        {
-            RectTransform __actionButton = Instantiate(_menuButton).GetComponent<RectTransform>();
-
-            ButtonSettings __settings = __actionButton.GetComponent<ButtonSettings>();
-
-            __settings.Text = a.GetDescription();
-            __settings.ClickAction = () =>
+            __actions.ActionsList.Select(p_objectAction =>
             {
-                switch(a)
+                RectTransform __actionButton = Instantiate(_menuButton).GetComponent<RectTransform>();
+
+                ButtonSettings __settings = __actionButton.GetComponent<ButtonSettings>();
+
+                __settings.Text = p_objectAction.GetDescription();
+                __settings.ClickAction = () =>
                 {
-                    case ObjectAction.Interact:
-                        //manda o arrombado ir até la
-                        p_obect.Interact();
-                        break;
-                    case ObjectAction.Cancel:
-                        break;
-                }
-                _menuPanel.gameObject.SetActive(false);
-            };
+                    ActivateContextMenu(false);
+                    onClickAction?.Invoke(null, new OnClickActionEventArgs(p_objectAction, p_object));
+                };
 
-            return __actionButton;
-        }).ToList().ForEach(b =>
+                return __actionButton;
+            }).ToList().ForEach(b =>
+            {
+                b.SetParent(_menuPanel);
+                b.localScale = Vector3.one;
+                b.localRotation = Quaternion.identity;
+                b.localPosition = Vector3.zero;
+
+                b.offsetMax = Vector2.down * 12 * (_menuPanel.childCount - 1);
+                b.offsetMin = Vector2.down * 12 * _menuPanel.childCount;
+            });
+
+            ActivateContextMenu(true);
+
+            _nodeClose = Timer.WaitSeconds(2f, () => ActivateContextMenu(false));
+        }
+
+        private void ActivateContextMenu(bool p_value)
         {
-            b.SetParent(_menuPanel);
-            b.localScale = Vector3.one;
-            b.localRotation =  Quaternion.identity;
-            b.localPosition = Vector3.zero;
-
-            b.offsetMax = Vector2.down * 12 * (_menuPanel.childCount - 1);
-            b.offsetMin = Vector2.down * 12 * _menuPanel.childCount;
-        });
-
-        _menuPanel.gameObject.SetActive(true);
+            IsOpen = p_value;
+            _menuPanel.gameObject.SetActive(p_value);
+        }
     }
+
 }
