@@ -19,6 +19,8 @@ public class InteractionMenu : MonoBehaviour
 
 	void Update ()
 	{
+        if (_view == null) return;
+
 	    Color __debugColor = Color.red;
 
 	    RaycastHit __hit;
@@ -29,10 +31,14 @@ public class InteractionMenu : MonoBehaviour
 	    {
 	        __debugColor = Color.green;
 
-	        if (Input.GetKeyDown(KeyCode.Mouse1))
+	        if (Input.GetKeyDown(KeyCode.Mouse0))
 	        {
 	            HandleMapObjectInteraction(__hit);
 	        }
+            else
+            {
+                _menuPanel.gameObject.SetActive(false);
+            }
 	    }
 
         Debug.DrawRay(_view.transform.position, __mouseRay.direction * 50, __debugColor, 1f);
@@ -47,6 +53,12 @@ public class InteractionMenu : MonoBehaviour
             BuildContextMenu(__hitObject);
             //__hitObject.Interact();
         }
+    }
+
+    internal void SetCamera(Camera p_camera)
+    {
+        _view = p_camera;
+        _menuCanvas.GetComponent<Canvas>().worldCamera = p_camera;
     }
 
     private void BuildContextMenu(MapObject p_obect)
@@ -79,7 +91,15 @@ public class InteractionMenu : MonoBehaviour
             __settings.Text = a.GetDescription();
             __settings.ClickAction = () =>
             {
-                p_obect.Interact();
+                switch(a)
+                {
+                    case ObjectAction.Interact:
+                        //manda o arrombado ir até la
+                        p_obect.Interact();
+                        break;
+                    case ObjectAction.Cancel:
+                        break;
+                }
                 _menuPanel.gameObject.SetActive(false);
             };
 

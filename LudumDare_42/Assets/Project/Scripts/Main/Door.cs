@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using Vox;
 
-public class Door : Wall//, IActor
+public class Door : Wall, IActor
 {
     public enum State
     {
@@ -32,8 +32,8 @@ public class Door : Wall//, IActor
 
     private TweenNode _nodeOpenAnimation;
 
-    //private List<ObjectAction> _actionsList;
-    //public List<ObjectAction> ActionsList => _actionsList ?? (_actionsList = new List<ObjectAction> { ObjectAction.OPEN, ObjectAction.CLOSE });
+    private List<ObjectAction> _actionsList;
+    public List<ObjectAction> ActionsList => _actionsList ?? (_actionsList = new List<ObjectAction> { ObjectAction.Interact, ObjectAction.Cancel });
 
     public override void Interact()
     {

@@ -6,9 +6,8 @@ using UnityEngine;
 
 public enum ObjectAction
 {
-    [Description("Abrir")] OPEN,
-    [Description("Fechar")] CLOSE,
-    [Description("Limpar")] CLEAR,
+    [Description("Interact")] Interact,
+    [Description("Cancel")] Cancel,
 }
 
 public interface IActor

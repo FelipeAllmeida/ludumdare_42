@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Internal;
 using UnityEngine.AI;
+using Vox;
 
 namespace Main
 {
@@ -15,6 +16,8 @@ namespace Main
         [SerializeField] private Unit _unit;
 
         [SerializeField] private float _cameraSpeed = 0.05f;
+
+        public Camera Camera { get { return _mainCamera; } }
 
 	    // Use this for initialization
 	    void Start ()
@@ -29,27 +32,7 @@ namespace Main
             _commandController.UpdateCommands();
             _inputManager?.CheckInput();
 
-            Vector3 __cameraMoveOffset = Vector3.zero;
-
-            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
-            {
-                __cameraMoveOffset.z += _cameraSpeed * Time.deltaTime;
-            }
-            else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
-            {
-                __cameraMoveOffset.z -= _cameraSpeed * Time.deltaTime;
-            }
-
-            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
-            {
-                __cameraMoveOffset.x -= _cameraSpeed * Time.deltaTime;
-            }
-            else if(Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
-            {
-                __cameraMoveOffset.x += _cameraSpeed * Time.deltaTime;
-            }
-
-            _mainCamera.transform.position += __cameraMoveOffset;
+            CheckCameraInputs();
         }
 
         #region Internal
@@ -80,6 +63,31 @@ namespace Main
         {
             _commandController.StopCurrentCommand();
             _commandController.MoveTo(_unit, p_inputInfo.worldClickPoint);
+        }
+
+        private void CheckCameraInputs()
+        {
+            Vector3 __cameraMoveOffset = Vector3.zero;
+
+            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
+            {
+                __cameraMoveOffset.z += _cameraSpeed * Time.deltaTime;
+            }
+            else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
+            {
+                __cameraMoveOffset.z -= _cameraSpeed * Time.deltaTime;
+            }
+
+            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
+            {
+                __cameraMoveOffset.x -= _cameraSpeed * Time.deltaTime;
+            }
+            else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+            {
+                __cameraMoveOffset.x += _cameraSpeed * Time.deltaTime;
+            }
+
+            _mainCamera.transform.position = Vector3.Lerp(_mainCamera.transform.position, _mainCamera.transform.position + __cameraMoveOffset, _cameraSpeed);
         }
         #endregion
     }
