@@ -7,8 +7,6 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
-using Vuforia;
-using Image = UnityEngine.UI.Image;
 
 public class InteractionMenu : MonoBehaviour
 {
