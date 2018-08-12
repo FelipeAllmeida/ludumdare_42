@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Main.Game;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -61,13 +62,16 @@ namespace Main
 
             RectTransformUtility.ScreenPointToLocalPointInRectangle(_menuCanvas, Input.mousePosition, _view, out __point);
 
-            _menuPanel.position = _menuCanvas.TransformPoint(__point);
+            Debug.Log($"Point: {__point}");
 
             IActor __actions = p_object as IActor;
 
             Vector2 __buttonSize = _menuButton.GetComponent<RectTransform>().sizeDelta;
 
             _menuPanel.sizeDelta = new Vector2(_menuPanel.sizeDelta.x, __buttonSize.y * __actions.ActionsList.Count);
+            _menuPanel.position = _menuCanvas.TransformPoint(__point);
+
+            Debug.Log($"_menuPanel.position: {_menuPanel.position}");
 
             __actions.ActionsList.Select(p_objectAction =>
             {

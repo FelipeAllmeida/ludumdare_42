@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4690685122849834}
   - component: {fileID: 114517371291406346}
   m_Layer: 0
-  m_Name: Ground
+  m_Name: Default_Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -371,7 +371,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 88276d46f1271b64cb8e44f8f9ad78a5, type: 2}
+  - {fileID: 2100000, guid: a5f936b564c68554fb6aa0ba47adfaca, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

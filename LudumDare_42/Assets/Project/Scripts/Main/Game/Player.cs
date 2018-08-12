@@ -6,8 +6,9 @@ using UnityEngine.AI;
 using Vox;
 using Internal.Commands;
 
-namespace Main
+namespace Main.Game
 {
+    [RequireComponent(typeof(InteractionMenu))]
     public class Player : MonoBehaviour
     {
         private CommandQuery _commandQuery;
@@ -18,6 +19,8 @@ namespace Main
         [SerializeField] private Unit _unit;
 
         [SerializeField] private float _cameraSpeed = 0.05f;
+
+        private bool _isRightClickMoving = false;
 
         public Camera Camera { get { return _mainCamera; } }
 
@@ -67,6 +70,12 @@ namespace Main
             switch(p_args.ObjectAction)
             {
                 case ObjectAction.Interact:
+                    if (_isRightClickMoving)
+                    {
+                        _commandQuery.ClearQuery();
+                        _isRightClickMoving = false;
+                    }
+
                     _commandQuery.AddCommand(new MoveCommand(_unit, p_args.MapObject.transform.position, (object p_commandSource, CommandCallbackEventArgs p_commandArgs) =>
                     {
                         p_args.MapObject.Interact();
@@ -97,8 +106,9 @@ namespace Main
 
         private void InputManager_OnMouseRightClick(InputInfo p_inputInfo)
         {
+            _isRightClickMoving = true;
             _commandQuery.ClearQuery();
-            _commandQuery.AddCommand(new MoveCommand(_unit, p_inputInfo.worldClickPoint));
+            _commandQuery.AddCommand(new MoveCommand(_unit, p_inputInfo.worldClickPoint, (p_source, p_eventArgs) => _isRightClickMoving = false));
         }
 
         private void CheckCameraInputs()

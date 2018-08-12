@@ -1,10 +1,19 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Main
+namespace Main.Game
 {
-    public class GameController : MonoBehaviour
+    [Serializable]
+    public struct PrefabData
+    {
+        [Range(0f, 1f)]
+        public float spawnPercentage;
+        public GameObject spawnObject;
+    }
+
+    public class GameController : EnvironmentController
     {
         [Header("Game Configuration")]
         [SerializeField] private float _waterFloodVelocity = 0.05f;
@@ -12,14 +21,12 @@ namespace Main
         [SerializeField] private int _mapWidth;
         [SerializeField] private int _mapHeight;
 
-        [Header("References")]
-        [SerializeField] private Canvas _gameCanvas;
-
         [Header("Prefabs")]
         [SerializeField] private Door _doorPrefab;
-        [SerializeField] private Ground _groundPrefab;
         [SerializeField] private Player _playerPrefab;
         [SerializeField] private Wall _wallPrefab;
+
+        [SerializeField] private List<PrefabData> _listGroundPrefabs;
 
         private Ground[,] _grounds;
         private Player _player;
@@ -27,15 +34,17 @@ namespace Main
         private Wall[,] _wallsVertical;
 
         // Use this for initialization
-        void Start()
+        public override void IntializeController()
         {
+            base.IntializeController();
             CreateMap();
             CreatePlayer();
         }
 
         // Update is called once per frame
-        void Update()
+        public override void UpdateController()
         {
+            base.UpdateController();
             UpdateMap();
         }
 
@@ -234,8 +243,8 @@ namespace Main
 
             int __floodStartX, __floodStartY;
 
-            __floodStartX = Random.Range(0, _mapWidth - 1);
-            __floodStartY = Random.Range(0, _mapHeight - 1);
+            __floodStartX = UnityEngine.Random.Range(0, _mapWidth - 1);
+            __floodStartY = UnityEngine.Random.Range(0, _mapHeight - 1);
 
             for (int i = 0; i < _mapWidth; i++)
             {
@@ -253,7 +262,21 @@ namespace Main
                 0f,
                 GameSettings.GROUND_SIZE2 + (GameSettings.GROUND_SIZE * p_y) + (GameSettings.WALL_SIZE * p_y));
 
-            Ground __ground = Instantiate(_groundPrefab, transform).GetComponent<Ground>();
+            int __bestIndex = 0;
+            float __bestResult = 0;
+
+            for (int i = 0; i < _listGroundPrefabs.Count; i++)
+            {
+                float __result = _listGroundPrefabs[i].spawnPercentage * UnityEngine.Random.Range(1f, 10f);
+
+                if (__result > __bestResult)
+                {
+                    __bestResult = __result;
+                    __bestIndex = i;
+                }
+            }   
+
+            Ground __ground = Instantiate(_listGroundPrefabs[__bestIndex].spawnObject, transform).GetComponent<Ground>();
 
             ListenGroundEvents(__ground);
 
@@ -283,7 +306,7 @@ namespace Main
                 {
                     bool __hasDoor = false;
 
-                    if (__doorCounter < __maxDoors && Random.Range(0, 2) <= 1)
+                    if (__doorCounter < __maxDoors && UnityEngine.Random.Range(0, 2) <= 1)
                     {
                         __doorCounter++;
                         __hasDoor = true;
@@ -301,7 +324,7 @@ namespace Main
                 {
                     bool __hasDoor = false;
 
-                    if (__doorCounter < __maxDoors && Random.Range(0, 2) <= 1)
+                    if (__doorCounter < __maxDoors && UnityEngine.Random.Range(0, 2) <= 1)
                     {
                         __doorCounter++;
                         __hasDoor = true;

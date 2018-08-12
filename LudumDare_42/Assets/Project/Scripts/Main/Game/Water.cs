@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Main
+namespace Main.Game
 {
     public class Water : MonoBehaviour
     {
