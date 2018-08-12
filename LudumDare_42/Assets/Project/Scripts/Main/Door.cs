@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using Vox;
 
-public class Door : Wall
+public class Door : Wall, IActor
 {
     public enum State
     {
@@ -31,7 +31,10 @@ public class Door : Wall
     [SerializeField] private List<Transform> _listTransformsDoor;
 
     private TweenNode _nodeOpenAnimation;
-    
+
+    private List<ObjectAction> _actionsList;
+    public List<ObjectAction> ActionsList => _actionsList ?? (_actionsList = new List<ObjectAction> { ObjectAction.OPEN, ObjectAction.CLOSE });
+
     public override void Interact()
     {
         if (CurrentState == State.OPEN)
@@ -102,4 +105,5 @@ public class Door : Wall
             _listTransformsDoor.ForEach(x => x.transform.localScale = new Vector3(1f, 1f, 0.3333333f));
         }
     }
+
 }
