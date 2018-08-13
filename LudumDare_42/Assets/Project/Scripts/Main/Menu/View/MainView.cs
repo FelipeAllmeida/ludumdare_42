@@ -28,10 +28,10 @@ namespace Main.Menu
 
         protected override void Animate(float p_value)
         {
-            _rectTransformLeftPanel.anchoredPosition = new Vector2((-_rectTransformLeftPanel.rect.width / 2f) - (_rectTransformLeftPanel.rect.width * (1f - p_value)),
+            _rectTransformLeftPanel.anchoredPosition = new Vector2((- _rectTransformLeftPanel.rect.width * (1f - p_value)),
                 _rectTransformLeftPanel.anchoredPosition.y);
 
-            _rectTransformRightPanel.anchoredPosition = new Vector2((_rectTransformRightPanel.rect.width / 2f) + (_rectTransformRightPanel.rect.width * (1f - p_value)),
+            _rectTransformRightPanel.anchoredPosition = new Vector2((_rectTransformRightPanel.rect.width * (1f - p_value)),
                _rectTransformRightPanel.anchoredPosition.y);
         }
 

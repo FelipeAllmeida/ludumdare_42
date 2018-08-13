@@ -28,8 +28,7 @@ namespace Main.Menu
         {
             _rectTransformButtonBack.anchoredPosition = new Vector2(25f - (50f * (1f - p_value)), 0f);
 
-            _rectTransformLayoutGroup.anchoredPosition = new Vector2(
-                (_rectTransformLayoutGroup.rect.width - 321f) + (- _rectTransformLayoutGroup.rect.width * (1f - p_value)),
+            _rectTransformLayoutGroup.anchoredPosition = new Vector2((- _rectTransformLayoutGroup.rect.width * (1f - p_value)),
                 _rectTransformLayoutGroup.anchoredPosition.y);
         }
     }
