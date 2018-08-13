@@ -8,6 +8,7 @@ using Internal.Commands;
 using Main.Game.UI;
 using System;
 using Main.Game.Itens;
+using Internal.Audio;
 
 namespace Main.Game
 {
@@ -99,22 +100,38 @@ namespace Main.Game
 
         private void InputManager_OnMouseLeftClick(InputInfo p_inputInfo)
         {
-            if (_interactionMenu.IsOpen == false)
+            if (p_inputInfo.phase == GesturePhaseType.START)
             {
-                MapItem __mapItem = p_inputInfo.hit.GetComponent<MapItem>();
-                if (__mapItem != null)
+                AudioController.Instance.Play(Tags.SFX_Click);
+                if (_interactionMenu.IsOpen == false)
                 {
-                    _interactionMenu.Open(__mapItem);
+                    MapItem __mapItem = p_inputInfo.hit.GetComponent<MapItem>();
+                    if (__mapItem != null)
+                    {
+                        _interactionMenu.Open(__mapItem);
+                    }
+                }
+            }
+
+            if (p_inputInfo.phase == GesturePhaseType.FINISH)
+            {
+                if (p_inputInfo.hit.GetComponent<MapItem>() == null)
+                {
+                    _interactionMenu.Close();
                 }
             }
         }
 
         private void InputManager_OnMouseRightClick(InputInfo p_inputInfo)
         {
-            if (_interactionMenu.IsOpen) _interactionMenu.Close();
-            _isRightClickMoving = true;
-            _commandQuery.ClearQuery();
-            _commandQuery.AddCommand(new MoveCommand(_unit, p_inputInfo.worldClickPoint, (p_source, p_eventArgs) => _isRightClickMoving = false));
+            if (p_inputInfo.phase == GesturePhaseType.START)
+            {
+                AudioController.Instance.Play(Tags.SFX_Click);
+                if (_interactionMenu.IsOpen) _interactionMenu.Close();
+                _isRightClickMoving = true;
+                _commandQuery.ClearQuery();
+                _commandQuery.AddCommand(new MoveCommand(_unit, p_inputInfo.worldClickPoint, (p_source, p_eventArgs) => _isRightClickMoving = false));
+            }
         }
 
         private void CheckCameraInputs()

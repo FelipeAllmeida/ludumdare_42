@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Main.Game.Itens;
+using Internal.Audio;
 
 namespace Main.Game
 {
@@ -61,6 +62,20 @@ namespace Main.Game
             _timeLeft = _timeLeft = (_timeGameOver.Subtract(DateTime.Now));
             CreateMap();
             CreatePlayer();
+        }
+
+        public override void EnableController()
+        {
+            base.EnableController();
+            AudioController.Instance.Play(Tags.Background_Game);
+            AudioController.Instance.Play(Tags.Ambiente_WaterFlooding);
+        }
+
+        public override void DisableController()
+        {
+            AudioController.Instance.Stop(Tags.Background_Game);
+            AudioController.Instance.Stop(Tags.Ambiente_WaterFlooding);
+            base.DisableController();
         }
 
         // Update is called once per frame

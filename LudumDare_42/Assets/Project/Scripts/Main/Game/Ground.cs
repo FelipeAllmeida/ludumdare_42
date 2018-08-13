@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Internal.Audio;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -102,18 +103,24 @@ namespace Main.Game
         {
             if (CurrentState == p_state) return;
 
+
             _currentState = p_state;
 
             _water.SetActive(CurrentState != State.DRY);
             _navMeshSourceTag.enabled = CurrentState != State.IMMERSE;
 
-            if (CurrentState == State.IMMERSE)
+            switch(CurrentState)
             {
-                _timerNode?.Cancel();
-                _timerNode = Timer.WaitSeconds(GameSettings.FORCE_FLOOD_ADJACENT_TIME, () =>
-                {
-                    onMaxPressure?.Invoke(this, null);
-                });
+                case State.FLOODED:
+                    AudioController.Instance.Play(Tags.Ambience_WaterFillingAdjacent);
+                    break;
+                case State.IMMERSE:
+                    _timerNode?.Cancel();
+                    _timerNode = Timer.WaitSeconds(GameSettings.FORCE_FLOOD_ADJACENT_TIME, () =>
+                    {
+                        onMaxPressure?.Invoke(this, null);
+                    });
+                    break;
             }
 
             onChangeState?.Invoke(this, new OnChangeStateEventArgs(CurrentState, _currentFillAmount));

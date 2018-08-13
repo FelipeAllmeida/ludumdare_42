@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Internal.Audio;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Vox;
@@ -12,19 +13,20 @@ namespace Main.Game.Itens
         public override void Interact()
         {
             base.Interact();
+            AudioController.Instance.Play(Tags.SFX_Interact_Door);
             StartAnimation(State);
         }
 
         public override void SetState(ItemState p_state)
         {
             base.SetState(p_state);
-            transform.localScale = new Vector3(1f, (State == ItemState.Disabled) ? 0.2f : 1f, 1f);
+            transform.localScale = new Vector3(1f, (State == ItemState.Enabled) ? 0.2f : 1f, 1f);
         }
 
         private void StartAnimation(ItemState p_state)
         {
-            float __start = (p_state == ItemState.Disabled) ? 1f : 0.2f;
-            float __finish = (p_state == ItemState.Disabled) ? 0.2f : 1f;
+            float __start = (p_state == ItemState.Enabled) ? 1f : 0.2f;
+            float __finish = (p_state == ItemState.Enabled) ? 0.2f : 1f;
 
             _nodeOpenAnimation?.Cancel();
             _nodeOpenAnimation = Tween.FloatTo(__start, __finish, .25f, EaseType.LINEAR, (float p_value) =>

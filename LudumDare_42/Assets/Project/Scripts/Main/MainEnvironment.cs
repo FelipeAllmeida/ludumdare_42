@@ -39,6 +39,11 @@ namespace Main
             }
         }
 
+        private void OnApplicationQuit()
+        {
+            BaseSound.StopAllSounds();
+        }
+
         private void InitializeControllers()
         {
             _listReferenceEnvironmentController.ForEach(x =>

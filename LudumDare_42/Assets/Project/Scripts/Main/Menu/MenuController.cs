@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Internal.Audio;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -51,6 +52,7 @@ namespace Main.Menu
         public override void EnableController()
         {
             base.EnableController();
+            AudioController.Instance.Play(Tags.Background_Menu);
             ChangeView(Views.Main);
         }
 
@@ -58,10 +60,15 @@ namespace Main.Menu
         {
             if (_dictViews.ContainsKey(_currentView))
             {
-                _dictViews[_currentView].Hide(base.DisableController);
+                _dictViews[_currentView].Hide(() =>
+                {
+                    AudioController.Instance.Stop(Tags.Background_Menu);
+                    base.DisableController();
+                });
             }
             else
             {
+                AudioController.Instance.Stop(Tags.Background_Menu);
                 base.DisableController();
             }
         }

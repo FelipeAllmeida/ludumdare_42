@@ -21,6 +21,7 @@ namespace Internal
 
     public class InputInfo
     {
+        public GesturePhaseType phase;
         public GameObject hit;
         public Vector3 worldClickPoint;
         public Vector3 screenClickPoint;
@@ -98,14 +99,27 @@ namespace Internal
             {
                 if (_dictInputs.ContainsKey(p_inputID))
                 {
+                    if (p_inputID == 0)
+                    {
+                        onMouseLeftClick?.Invoke(_dictInputs[p_inputID]);
+                    }
+                    else if (p_inputID == 1)
+                    {
+                        onMouseRightClick?.Invoke(_dictInputs[p_inputID]);
+                    }
+
                     _dictInputs.Remove(p_inputID);
                 }
             }
             else if (p_phase == GesturePhaseType.UPDATE)
             {
                 bool _isAllowedLayer = false;
-                UpdateInputInfo(p_inputID, out _isAllowedLayer);
-                if (p_inputID == 1)
+                UpdateInputInfo(p_inputID, p_phase, out _isAllowedLayer);
+                if (p_inputID == 0)
+                {
+                    onMouseLeftClick?.Invoke(_dictInputs[0]);
+                }
+                else if (p_inputID == 1)
                 {
                     onMouseRightClick?.Invoke(_dictInputs[1]);
                 }
@@ -115,7 +129,7 @@ namespace Internal
                 if (_dictInputs.ContainsKey(p_inputID) == false)
                 {
                     bool _isAllowedLayer;
-                    InputInfo __inputInfo = CreateInputInfo(out _isAllowedLayer);
+                    InputInfo __inputInfo = CreateInputInfo(p_phase, out _isAllowedLayer);
                     _dictInputs.Add(p_inputID, __inputInfo);
                     if (_isAllowedLayer == false) return;
                     if (p_inputID == 0)
@@ -130,10 +144,13 @@ namespace Internal
             }
         }
 
-        private InputInfo CreateInputInfo(out bool p_isInputAllowed)
+        private InputInfo CreateInputInfo(GesturePhaseType p_phase, out bool p_isInputAllowed)
         {
             p_isInputAllowed = false;
+
             InputInfo __inputInfo = new InputInfo();
+            __inputInfo.phase = p_phase;
+
             RaycastHit __raycastHit = new RaycastHit();
             Ray __ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -154,11 +171,13 @@ namespace Internal
             return __inputInfo;
         }
 
-        private void UpdateInputInfo(int p_inputID, out bool p_isInputAllowed)
+        private void UpdateInputInfo(int p_inputID, GesturePhaseType p_phase, out bool p_isInputAllowed)
         {
             p_isInputAllowed = false;
             if (_dictInputs.ContainsKey(p_inputID) == true)
             {
+                _dictInputs[p_inputID].phase = p_phase;
+
                 RaycastHit __raycastHit = new RaycastHit();
                 Ray __ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 

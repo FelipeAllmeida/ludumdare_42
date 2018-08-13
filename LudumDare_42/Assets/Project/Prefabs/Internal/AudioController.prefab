@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1714717791258258}
+  m_IsPrefabParent: 1
+--- !u!1 &1714717791258258
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4637114511342750}
+  - component: {fileID: 114961622871575722}
+  - component: {fileID: 81560671044263810}
+  m_Layer: 0
+  m_Name: AudioController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4637114511342750
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1714717791258258}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!81 &81560671044263810
+AudioListener:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1714717791258258}
+  m_Enabled: 1
+--- !u!114 &114961622871575722
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1714717791258258}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 923bac7068db9ea4f80e22ece670b350, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _listReferenceAudioTriggers:
+  - tag: 2
+    isLoop: 1
+    layer: 1
+    listClips:
+    - {fileID: 8300000, guid: 8cc4f767518bd324a9843b6153957d4e, type: 3}
+  - tag: 3
+    isLoop: 1
+    layer: 1
+    listClips:
+    - {fileID: 8300000, guid: 1ac9bd1208d91fa41a5a027f5e1d8a68, type: 3}
+  - tag: 4
+    isLoop: 0
+    layer: 3
+    listClips:
+    - {fileID: 8300000, guid: be9976a5fed422749be0e81a8bf45a72, type: 3}
+  - tag: 5
+    isLoop: 0
+    layer: 2
+    listClips:
+    - {fileID: 8300000, guid: 7eaedc155fd0ccb4fb65624c60554aed, type: 3}
+  - tag: 0
+    isLoop: 1
+    layer: 4
+    listClips:
+    - {fileID: 8300000, guid: 31aabf9008ab64945a1e701559035e98, type: 3}
+  - tag: 1
+    isLoop: 0
+    layer: 2
+    listClips:
+    - {fileID: 8300000, guid: b8735017a0203e0458f74a5c5eea7fd9, type: 3}
+  _volumeBackground: 0.2
+  _volumeAmbience: 0.05
+  _volumeGameSFX: 0.2
+  _volumeUserInterfaceSFX: 0.5
