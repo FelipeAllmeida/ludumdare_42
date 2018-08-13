@@ -18,6 +18,7 @@ namespace Main.Game
         private CommandQuery _commandQuery;
         private InputManager _inputManager;
 
+        [SerializeField] private Animator _animator;
         [SerializeField] private Camera _mainCamera;
         [SerializeField] private InteractionMenu _interactionMenu;
         [SerializeField] private Unit _unit;
@@ -82,8 +83,11 @@ namespace Main.Game
                         _isRightClickMoving = false;
                     }
 
+                    AudioController.Instance.Play(Tags.SFX_Interact_Player);
+                    _animator.SetBool("isWalking", true);
                     _commandQuery.AddCommand(new MoveCommand(_unit, p_args.MapItem.transform.position, (object p_commandSource, CommandCallbackEventArgs p_commandArgs) =>
                     {
+                        _animator.SetBool("isWalking", false);
                         p_args.MapItem.Interact();
                     }));
                     break;
@@ -102,22 +106,14 @@ namespace Main.Game
         {
             if (p_inputInfo.phase == GesturePhaseType.START)
             {
-                AudioController.Instance.Play(Tags.SFX_Click);
                 if (_interactionMenu.IsOpen == false)
                 {
                     MapItem __mapItem = p_inputInfo.hit.GetComponent<MapItem>();
                     if (__mapItem != null)
                     {
+                        AudioController.Instance.Play(Tags.SFX_Click);
                         _interactionMenu.Open(__mapItem);
                     }
-                }
-            }
-
-            if (p_inputInfo.phase == GesturePhaseType.FINISH)
-            {
-                if (p_inputInfo.hit.GetComponent<MapItem>() == null)
-                {
-                    _interactionMenu.Close();
                 }
             }
         }
@@ -126,11 +122,17 @@ namespace Main.Game
         {
             if (p_inputInfo.phase == GesturePhaseType.START)
             {
-                AudioController.Instance.Play(Tags.SFX_Click);
+                AudioController.Instance.Play(Tags.SFX_Interact_Player);
+
                 if (_interactionMenu.IsOpen) _interactionMenu.Close();
                 _isRightClickMoving = true;
+                _animator.SetBool("isWalking", true);
                 _commandQuery.ClearQuery();
-                _commandQuery.AddCommand(new MoveCommand(_unit, p_inputInfo.worldClickPoint, (p_source, p_eventArgs) => _isRightClickMoving = false));
+                _commandQuery.AddCommand(new MoveCommand(_unit, p_inputInfo.worldClickPoint, (p_source, p_eventArgs) =>
+                {
+                    _animator.SetBool("isWalking", false);
+                    _isRightClickMoving = false;
+                }));
             }
         }
 

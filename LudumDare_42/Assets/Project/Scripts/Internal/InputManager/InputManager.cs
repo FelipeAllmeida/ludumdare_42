@@ -99,6 +99,8 @@ namespace Internal
             {
                 if (_dictInputs.ContainsKey(p_inputID))
                 {
+                    bool _isAllowedLayer = false;
+                    UpdateInputInfo(p_inputID, p_phase, out _isAllowedLayer);
                     if (p_inputID == 0)
                     {
                         onMouseLeftClick?.Invoke(_dictInputs[p_inputID]);

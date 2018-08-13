@@ -90,6 +90,11 @@ MonoBehaviour:
     layer: 2
     listClips:
     - {fileID: 8300000, guid: b8735017a0203e0458f74a5c5eea7fd9, type: 3}
+  - tag: 8
+    isLoop: 0
+    layer: 2
+    listClips:
+    - {fileID: 8300000, guid: a4fcb24e22517ab449e954efc3838e7a, type: 3}
   _volumeBackground: 0.2
   _volumeAmbience: 0.05
   _volumeGameSFX: 0.2

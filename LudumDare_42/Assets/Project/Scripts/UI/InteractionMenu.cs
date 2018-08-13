@@ -102,6 +102,7 @@ namespace Main
 
         private void ActivateContextMenu(bool p_value)
         {
+            _nodeClose?.Cancel();
             IsOpen = p_value;
             _menuPanel.gameObject.SetActive(p_value);
         }
