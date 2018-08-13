@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Main.Game.Itens;
 
 namespace Main.Game
 {
@@ -25,8 +26,8 @@ namespace Main.Game
         [SerializeField] private float _oxygenGainSpeed = 0f;
         [SerializeField] private float _waterFloodVelocity = 0.05f;
 
-        [SerializeField] private int _startMinutesLeft = 3;
-        [SerializeField] private int _startSecondsLeft = 30;
+        [SerializeField] private int _startMinutesLeft = 5;
+        [SerializeField] private int _startSecondsLeft = 0;
 
         [SerializeField] private int _mapWidth;
         [SerializeField] private int _mapHeight;
@@ -35,7 +36,7 @@ namespace Main.Game
         [SerializeField] private int _floodSourceY;
 
         [Header("Prefabs")]
-        [SerializeField] private Door _doorPrefab;
+        [SerializeField] private WallDoor _doorPrefab;
         [SerializeField] private Player _playerPrefab;
 
         [SerializeField] private List<PrefabData> _listGroundPrefabs;
@@ -79,7 +80,18 @@ namespace Main.Game
                 {
                     Ground __ground = _grounds[i, j];
 
-                    if (__ground.CurrentState == Ground.State.IMMERSE) continue;
+                    switch(__ground.CurrentState)
+                    {
+                        case Ground.State.IMMERSE:
+                            break;
+                        case Ground.State.FLOOD_SOURCE:
+                            __ground.UpdateFillAmount(_waterFloodVelocity);
+                            break;
+                        default:
+                            if (HaveWaterComingFromAdjacentRooms(__ground))
+                                __ground.UpdateFillAmount(_waterFloodVelocity);
+                            break;
+                    }
 
                     if (__ground.CurrentState == Ground.State.FLOOD_SOURCE || HaveWaterComingFromAdjacentRooms(__ground))
                         __ground.UpdateFillAmount(_waterFloodVelocity);
@@ -132,6 +144,7 @@ namespace Main.Game
         private void ListenGroundEvents(Ground p_ground)
         {
             p_ground.onChangeState += Ground_OnChangeState;
+            p_ground.onMaxPressure += Ground_OnMaxPressure;
         }
 
         private void Ground_OnChangeState(object p_source, Ground.OnChangeStateEventArgs p_eventArgs)
@@ -142,14 +155,19 @@ namespace Main.Game
             }
         }
 
-        private void ListenDoorEvents(Door p_door)
+        private void Ground_OnMaxPressure(object p_source, EventArgs p_args)
+        {
+            ForceFloodAdjacent(p_source as Ground);
+        }
+
+        private void ListenDoorEvents(WallDoor p_door)
         {
             p_door.onChangeState += Door_OnChangeState;
         }
 
-        private void Door_OnChangeState(object p_source, Door.OnChangeStateEventArgs p_eventArgs)
+        private void Door_OnChangeState(object p_source, WallDoor.OnChangeStateEventArgs p_eventArgs)
         {
-            if (p_eventArgs.State == Door.State.OPEN)
+            if (p_eventArgs.State == ItemState.Enabled)
             {
                 FloodAdjacent(p_source as Wall);
             }
@@ -165,7 +183,7 @@ namespace Main.Game
             if (p_ground.X > 0)
             {
                 if (_wallsVertical[p_ground.X - 1, p_ground.Y].Type == Wall.WallType.DOOR
-                    && (_wallsVertical[p_ground.X - 1, p_ground.Y] as Door).CurrentState == Door.State.OPEN)
+                    && (_wallsVertical[p_ground.X - 1, p_ground.Y] as WallDoor).CurrentState == ItemState.Enabled)
                 {
                     if (_grounds[p_ground.X - 1, p_ground.Y].CurrentState != Ground.State.DRY)
                         return true;
@@ -175,7 +193,7 @@ namespace Main.Game
             if (p_ground.X <= _wallsVertical.GetLength(0) - 1)
             {
                 if (_wallsVertical[p_ground.X, p_ground.Y].Type == Wall.WallType.DOOR
-                    && (_wallsVertical[p_ground.X, p_ground.Y] as Door).CurrentState == Door.State.OPEN)
+                    && (_wallsVertical[p_ground.X, p_ground.Y] as WallDoor).CurrentState == ItemState.Enabled)
                 {
                     if (_grounds[p_ground.X + 1, p_ground.Y].CurrentState != Ground.State.DRY)
                         return true;
@@ -185,7 +203,7 @@ namespace Main.Game
             if (p_ground.Y > 0)
             {
                 if (_wallsHorizontal[p_ground.X, p_ground.Y - 1].Type == Wall.WallType.DOOR
-                    && (_wallsHorizontal[p_ground.X, p_ground.Y - 1] as Door).CurrentState == Door.State.OPEN)
+                    && (_wallsHorizontal[p_ground.X, p_ground.Y - 1] as WallDoor).CurrentState == ItemState.Enabled)
                 {
                     if (_grounds[p_ground.X, p_ground.Y - 1].CurrentState != Ground.State.DRY)
                         return true;
@@ -195,7 +213,7 @@ namespace Main.Game
             if (p_ground.Y <= _wallsHorizontal.GetLength(1) - 1)
             {
                 if (_wallsHorizontal[p_ground.X, p_ground.Y].Type == Wall.WallType.DOOR
-                    && (_wallsHorizontal[p_ground.X, p_ground.Y] as Door).CurrentState == Door.State.OPEN)
+                    && (_wallsHorizontal[p_ground.X, p_ground.Y] as WallDoor).CurrentState == ItemState.Enabled)
                 {
                     if (_grounds[p_ground.X, p_ground.Y + 1].CurrentState != Ground.State.DRY)
                         return true;
@@ -205,6 +223,55 @@ namespace Main.Game
             return false;
         }
 
+        private void ForceFloodAdjacent(Ground p_ground)
+        {
+            try
+            {
+                if (p_ground.X > 0)
+                {
+                    if (_wallsVertical[p_ground.X - 1, p_ground.Y].Type == Wall.WallType.DOOR
+                        && (_wallsVertical[p_ground.X - 1, p_ground.Y] as WallDoor).CurrentState == ItemState.Disabled)
+                    {
+                        _wallsVertical[p_ground.X - 1, p_ground.Y].ForceInteract();
+                    }
+                }
+
+                if (p_ground.X <= _wallsVertical.GetLength(0) - 1)
+                {
+                    if (_wallsVertical[p_ground.X, p_ground.Y].Type == Wall.WallType.DOOR
+                        && (_wallsVertical[p_ground.X, p_ground.Y] as WallDoor).CurrentState == ItemState.Disabled)
+                    {
+                        _wallsVertical[p_ground.X, p_ground.Y].ForceInteract();
+                    }
+                }
+
+                if (p_ground.Y > 0)
+                {
+                    if (_wallsHorizontal[p_ground.X, p_ground.Y - 1].Type == Wall.WallType.DOOR
+                        && (_wallsHorizontal[p_ground.X, p_ground.Y - 1] as WallDoor).CurrentState == ItemState.Disabled)
+                    {
+                        _wallsHorizontal[p_ground.X, p_ground.Y - 1].ForceInteract();
+                    }
+                }
+
+                if (p_ground.Y <= _wallsHorizontal.GetLength(1) - 1)
+                {
+                    if (_wallsHorizontal[p_ground.X, p_ground.Y].Type == Wall.WallType.DOOR
+                        && (_wallsHorizontal[p_ground.X, p_ground.Y] as WallDoor).CurrentState == ItemState.Disabled)
+                    {
+                        _wallsHorizontal[p_ground.X, p_ground.Y].ForceInteract();
+                    }
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.Log($"x: {p_ground.X} | y: {p_ground.Y}");
+                Debug.Log($"Vertical: {_wallsVertical.GetLength(0)} - {_wallsVertical.GetLength(1)}");
+                Debug.Log($"Horizontal: {_wallsHorizontal.GetLength(0)} - {_wallsHorizontal.GetLength(1)}");
+                Debug.LogError(e);
+            }
+        }
+
         private void FloodAdjacent(Ground p_ground)
         {
             try
@@ -212,7 +279,7 @@ namespace Main.Game
                 if (p_ground.X > 0)
                 {
                     if (_wallsVertical[p_ground.X - 1, p_ground.Y].Type == Wall.WallType.DOOR
-                        && (_wallsVertical[p_ground.X - 1, p_ground.Y] as Door).CurrentState == Door.State.OPEN)
+                        && (_wallsVertical[p_ground.X - 1, p_ground.Y] as WallDoor).CurrentState == ItemState.Enabled)
                     {
                         if (_grounds[p_ground.X - 1, p_ground.Y].CurrentState == Ground.State.DRY)
                             _grounds[p_ground.X - 1, p_ground.Y].SetFillAmount(0.01f);
@@ -222,7 +289,7 @@ namespace Main.Game
                 if (p_ground.X <= _wallsVertical.GetLength(0) - 1)
                 {
                     if (_wallsVertical[p_ground.X, p_ground.Y].Type == Wall.WallType.DOOR
-                        && (_wallsVertical[p_ground.X, p_ground.Y] as Door).CurrentState == Door.State.OPEN)
+                        && (_wallsVertical[p_ground.X, p_ground.Y] as WallDoor).CurrentState == ItemState.Enabled)
                     {
                         if (_grounds[p_ground.X + 1, p_ground.Y].CurrentState == Ground.State.DRY)
                             _grounds[p_ground.X + 1, p_ground.Y].SetFillAmount(0.01f);
@@ -232,7 +299,7 @@ namespace Main.Game
                 if (p_ground.Y > 0)
                 {
                     if (_wallsHorizontal[p_ground.X, p_ground.Y - 1].Type == Wall.WallType.DOOR
-                        && (_wallsHorizontal[p_ground.X, p_ground.Y - 1] as Door).CurrentState == Door.State.OPEN)
+                        && (_wallsHorizontal[p_ground.X, p_ground.Y - 1] as WallDoor).CurrentState == ItemState.Enabled)
                     {
                         if (_grounds[p_ground.X, p_ground.Y - 1].CurrentState == Ground.State.DRY)
                             _grounds[p_ground.X, p_ground.Y - 1].SetFillAmount(0.01f);
@@ -242,7 +309,7 @@ namespace Main.Game
                 if (p_ground.Y <= _wallsHorizontal.GetLength(1) - 1)
                 {
                     if (_wallsHorizontal[p_ground.X, p_ground.Y].Type == Wall.WallType.DOOR
-                        && (_wallsHorizontal[p_ground.X, p_ground.Y] as Door).CurrentState == Door.State.OPEN)
+                        && (_wallsHorizontal[p_ground.X, p_ground.Y] as WallDoor).CurrentState == ItemState.Enabled)
                     {
                         if (_grounds[p_ground.X, p_ground.Y + 1].CurrentState == Ground.State.DRY)
                             _grounds[p_ground.X, p_ground.Y + 1].SetFillAmount(0.01f);
@@ -262,29 +329,29 @@ namespace Main.Game
         {
             if (p_wall.IsHorizontal)
             {
-                if (p_wall.Y > 0 && _grounds[p_wall.X, p_wall.Y].CurrentState == Ground.State.IMMERSE)
+                if (p_wall.Y >= 0 && _grounds[p_wall.X, p_wall.Y].CurrentState == Ground.State.IMMERSE)
                 {
-                    if (p_wall.Y < _grounds.GetLength(1) - 1 && _grounds[p_wall.X, p_wall.Y + 1].CurrentState == Ground.State.DRY)
+                    if (p_wall.Y < _grounds.GetLength(1) - 1 && _grounds[p_wall.X, p_wall.Y + 1 ].CurrentState == Ground.State.DRY)
                         _grounds[p_wall.X, p_wall.Y + 1].SetFillAmount(0.01f);
                 }
 
                 if (p_wall.Y < _grounds.GetLength(1) - 1 && _grounds[p_wall.X, p_wall.Y + 1].CurrentState == Ground.State.IMMERSE)
                 {
-                    if (p_wall.Y > 0 && _grounds[p_wall.X, p_wall.Y].CurrentState == Ground.State.DRY)
+                    if (p_wall.Y >= 0 && _grounds[p_wall.X, p_wall.Y].CurrentState == Ground.State.DRY)
                         _grounds[p_wall.X, p_wall.Y].SetFillAmount(0.01f);
                 }
             }
             else
             {
-                if (p_wall.X > 0 && _grounds[p_wall.X, p_wall.Y].CurrentState == Ground.State.IMMERSE)
+                if (p_wall.X >= 0 && _grounds[p_wall.X, p_wall.Y].CurrentState == Ground.State.IMMERSE)
                 {
-                    if (p_wall.X < _grounds.GetLength(1) - 1 && _grounds[p_wall.X + 1, p_wall.Y].CurrentState == Ground.State.DRY)
+                    if (p_wall.X < _grounds.GetLength(0) - 1 && _grounds[p_wall.X + 1, p_wall.Y].CurrentState == Ground.State.DRY)
                         _grounds[p_wall.X + 1, p_wall.Y].SetFillAmount(0.01f);
                 }
 
-                if (p_wall.X < _grounds.GetLength(1) - 1 && _grounds[p_wall.X + 1, p_wall.Y ].CurrentState == Ground.State.IMMERSE)
+                if (p_wall.X < _grounds.GetLength(0) - 1 && _grounds[p_wall.X + 1, p_wall.Y ].CurrentState == Ground.State.IMMERSE)
                 {
-                    if (p_wall.X > 0 && _grounds[p_wall.X, p_wall.Y].CurrentState == Ground.State.DRY)
+                    if (p_wall.X >= 0 && _grounds[p_wall.X, p_wall.Y].CurrentState == Ground.State.DRY)
                         _grounds[p_wall.X, p_wall.Y].SetFillAmount(0.01f);
                 }
             }
@@ -336,10 +403,8 @@ namespace Main.Game
             ListenGroundEvents(__ground);
 
             __ground.name = $"Ground [{p_x}][{p_y}]";
-            __ground.isFloodSource = p_startWithFlood;
 
-            if (__ground.isFloodSource)
-                Debug.Log($"Flood Source Ground [{p_x}][{p_y}]");
+            __ground.isFloodSource = p_startWithFlood;
 
             __ground.Initialize(p_x, p_y);
             __ground.SetFillAmount(0f);
@@ -401,8 +466,8 @@ namespace Main.Game
             switch(__wall.Type)
             {
                 case Wall.WallType.DOOR:
-                    (__wall as Door).SetState((UnityEngine.Random.Range(0, 2) == 1) ? Door.State.OPEN : Door.State.CLOSED);
-                    ListenDoorEvents(__wall as Door);
+                    (__wall as WallDoor).SetState((UnityEngine.Random.Range(0, 2) == 1) ? ItemState.Enabled : ItemState.Disabled);
+                    ListenDoorEvents(__wall as WallDoor);
                     break;
             }
             __wall.name = $"Wall {(p_isHorizontal?"Horizontal":"Vertical")} [{p_x}][{p_y}]";

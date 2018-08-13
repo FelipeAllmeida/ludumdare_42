@@ -1,58 +1,43 @@
-﻿using System;
+﻿using Main.Game.Itens;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
-using Vox;
 
 namespace Main.Game
 {
-    public class Door : Wall, IActor
+    public class WallDoor : Wall
     {
-        public enum State
-        {
-            OPEN,
-            CLOSED
-        }
-
         #region Events
         public class OnChangeStateEventArgs : EventArgs
         {
-            public OnChangeStateEventArgs(State p_state) { State = p_state; }
-            public State State { get; private set; }
+            public OnChangeStateEventArgs(ItemState p_state) { State = p_state; }
+            public ItemState State { get; private set; }
         }
 
         public event EventHandler<OnChangeStateEventArgs> onChangeState;
         #endregion
 
-        [SerializeField] private State _currentState = State.OPEN;
-        public State CurrentState { get { return _currentState; } }
-
-        [SerializeField] private Transform _trasformPivotDoor;
+        [Header("References")]
+        [SerializeField] private DoorItem _doorItem;
         [SerializeField] private List<Transform> _listTransformsDoor;
+        
+        private List<ItemAction> _actionsList;
+        public List<ItemAction> ActionsList => _actionsList ?? (_actionsList = new List<ItemAction> { ItemAction.Interact, ItemAction.Cancel });
 
-        private TweenNode _nodeOpenAnimation;
+        public ItemState CurrentState { get { return _doorItem.State; } }
 
-        private List<ObjectAction> _actionsList;
-        public List<ObjectAction> ActionsList => _actionsList ?? (_actionsList = new List<ObjectAction> { ObjectAction.Interact, ObjectAction.Cancel });
-
-        public override void Interact()
+        public override void ForceInteract()
         {
-            if (CurrentState == State.OPEN)
-                _currentState = State.CLOSED;
-            else
-                _currentState = State.OPEN;
-
-            StartAnimation(CurrentState);
-
+            _doorItem.Interact();
             onChangeState?.Invoke(this, new OnChangeStateEventArgs(CurrentState));
         }
 
-        public void SetState(State p_state)
+        public void SetState(ItemState p_state)
         {
-            _currentState = p_state;
-            _trasformPivotDoor.localScale = new Vector3(1f, (p_state == State.OPEN) ? 0.2f : 1f, 1f);
+            _doorItem.SetState(p_state);
         }
 
         public override void SetPosition(Vector3 p_position)
@@ -107,16 +92,5 @@ namespace Main.Game
             }
         }
 
-        private void StartAnimation(State p_state)
-        {
-            float __start = (p_state == State.OPEN) ? 1f : 0.2f;
-            float __finish = (p_state == State.OPEN) ? 0.2f : 1f;
-
-            _nodeOpenAnimation?.Cancel();
-            _nodeOpenAnimation = Tween.FloatTo(__start, __finish, .25f, EaseType.LINEAR, (float p_value) =>
-            {
-                _trasformPivotDoor.localScale = new Vector3(1f, p_value, 1f);
-            });
-        }
     }
 }

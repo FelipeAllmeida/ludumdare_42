@@ -3,17 +3,17 @@ using System.Collections;
 using UnityEditor;
 using Main.Game;
 
-[CustomEditor(typeof(Door))]
+[CustomEditor(typeof(WallDoor))]
 public class DoorInspector : Editor
 {
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
 
-        Door myScript = (Door)target;
+        WallDoor myScript = (WallDoor)target;
         if (GUILayout.Button("Interact"))
         {
-            myScript.Interact();
+            myScript.ForceInteract();
         }
     }
 }

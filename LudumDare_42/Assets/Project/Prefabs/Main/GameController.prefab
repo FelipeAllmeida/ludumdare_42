@@ -63,7 +63,7 @@ MonoBehaviour:
   _mapHeight: 5
   _floodSourceX: 8
   _floodSourceY: 4
-  _doorPrefab: {fileID: 114156200628983146, guid: 1e7438fa71bb27a40aef3b27c4f44afe,
+  _doorPrefab: {fileID: 114087344345673526, guid: a3c7135f69e194146a8d1652d8a6e12d,
     type: 2}
   _playerPrefab: {fileID: 114370867916558262, guid: 9307b3f1bd4311445afe3c2bb46a34e4,
     type: 2}

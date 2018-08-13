@@ -16,18 +16,6 @@ namespace Main.Game
         public WallType Type { get { return _type; } }
 
         public bool IsHorizontal { get { return transform.localScale.x > transform.localScale.z; } }
-
-        // Use this for initialization
-        void Start()
-        {
-
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
     }
 
 }

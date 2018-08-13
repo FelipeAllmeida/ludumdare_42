@@ -7,6 +7,7 @@ using Vox;
 using Internal.Commands;
 using Main.Game.UI;
 using System;
+using Main.Game.Itens;
 
 namespace Main.Game
 {
@@ -73,19 +74,19 @@ namespace Main.Game
         {
             switch(p_args.ObjectAction)
             {
-                case ObjectAction.Interact:
+                case ItemAction.Interact:
                     if (_isRightClickMoving)
                     {
                         _commandQuery.ClearQuery();
                         _isRightClickMoving = false;
                     }
 
-                    _commandQuery.AddCommand(new MoveCommand(_unit, p_args.MapObject.transform.position, (object p_commandSource, CommandCallbackEventArgs p_commandArgs) =>
+                    _commandQuery.AddCommand(new MoveCommand(_unit, p_args.MapItem.transform.position, (object p_commandSource, CommandCallbackEventArgs p_commandArgs) =>
                     {
-                        p_args.MapObject.Interact();
+                        p_args.MapItem.Interact();
                     }));
                     break;
-                case ObjectAction.Cancel:
+                case ItemAction.Cancel:
                     break;
             }
         }
@@ -100,10 +101,10 @@ namespace Main.Game
         {
             if (_interactionMenu.IsOpen == false)
             {
-                MapObject __mapObject = p_inputInfo.hit.GetComponent<MapObject>();
-                if ((IActor)__mapObject != null)
+                MapItem __mapItem = p_inputInfo.hit.GetComponent<MapItem>();
+                if (__mapItem != null)
                 {
-                    _interactionMenu.Open(__mapObject);
+                    _interactionMenu.Open(__mapItem);
                 }
             }
         }

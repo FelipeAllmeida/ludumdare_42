@@ -17,4 +17,6 @@ public static class GameSettings
     public const float WATER_MAX_HEIGHT = 4.25f;
 
     public static float UI_BAR_SIZE_X = 300f;
+
+    public static float FORCE_FLOOD_ADJACENT_TIME = 10f;
 }

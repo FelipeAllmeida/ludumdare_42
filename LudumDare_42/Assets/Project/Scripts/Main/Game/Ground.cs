@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Vox;
 
 namespace Main.Game
 {
@@ -24,6 +25,7 @@ namespace Main.Game
         }
 
         public event EventHandler<OnChangeStateEventArgs> onChangeState;
+        public event EventHandler onMaxPressure;
         #endregion
 
         #region Public Data
@@ -39,6 +41,7 @@ namespace Main.Game
 
         private NavMeshSourceTag _navMeshSourceTag;
         private float _currentFillAmount;
+        private TimerNode _timerNode;
 
         private Vector3 _position;
         #endregion
@@ -103,6 +106,15 @@ namespace Main.Game
 
             _water.SetActive(CurrentState != State.DRY);
             _navMeshSourceTag.enabled = CurrentState != State.IMMERSE;
+
+            if (CurrentState == State.IMMERSE)
+            {
+                _timerNode?.Cancel();
+                _timerNode = Timer.WaitSeconds(GameSettings.FORCE_FLOOD_ADJACENT_TIME, () =>
+                {
+                    onMaxPressure?.Invoke(this, null);
+                });
+            }
 
             onChangeState?.Invoke(this, new OnChangeStateEventArgs(CurrentState, _currentFillAmount));
         }

@@ -13,7 +13,7 @@ namespace Main.Game
             Y = p_y;
         }
 
-        public virtual void Interact()
+        public virtual void ForceInteract()
         {
 
         }

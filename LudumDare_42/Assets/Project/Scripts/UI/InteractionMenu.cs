@@ -1,4 +1,4 @@
-﻿using Main.Game;
+﻿using Main.Game.Itens;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,11 +14,11 @@ namespace Main
 {
     public class OnClickActionEventArgs : EventArgs
     {
-        public OnClickActionEventArgs(ObjectAction p_objectAction, MapObject p_mapObject)
-        { ObjectAction = p_objectAction;  MapObject = p_mapObject; }
+        public OnClickActionEventArgs(ItemAction p_objectAction, MapItem p_mapObject)
+        { ObjectAction = p_objectAction;  MapItem = p_mapObject; }
 
-        public ObjectAction ObjectAction { get; private set; }
-        public MapObject MapObject { get; private set; }
+        public ItemAction ObjectAction { get; private set; }
+        public MapItem MapItem { get; private set; }
     }
 
     public class InteractionMenu : MonoBehaviour
@@ -29,6 +29,7 @@ namespace Main
 
         [SerializeField] private RectTransform _menuCanvas;
         [SerializeField] private RectTransform _menuPanel;
+        [SerializeField] private Text _menuText;
 
         [SerializeField] private Button _menuButton;
 
@@ -47,33 +48,27 @@ namespace Main
             ActivateContextMenu(false);
         }
 
-        public void Open(MapObject p_object)
+        public void Open(MapItem p_object)
         {
             _nodeClose?.Cancel();
 
-            foreach (GameObject __child in _menuPanel.GetComponentsInChildren<RectTransform>().Select(c => c.gameObject).Except(new[] { _menuPanel.gameObject }))
+            foreach (GameObject __child in _menuPanel.GetComponentsInChildren<Button>().Select(c => c.gameObject))
             {
                 Destroy(__child);
             }
-
-            _menuPanel.DetachChildren();
 
             Vector2 __point;
 
             RectTransformUtility.ScreenPointToLocalPointInRectangle(_menuCanvas, Input.mousePosition, _view, out __point);
 
-            Debug.Log($"Point: {__point}");
-
-            IActor __actions = p_object as IActor;
+            IInteractable __actions = p_object as IInteractable;
 
             Vector2 __buttonSize = _menuButton.GetComponent<RectTransform>().sizeDelta;
 
-            _menuPanel.sizeDelta = new Vector2(_menuPanel.sizeDelta.x, 10f + __buttonSize.y * __actions.ActionsList.Count + 3 * __actions.ActionsList.Count);
+            _menuPanel.sizeDelta = new Vector2(_menuPanel.sizeDelta.x, 26f + __buttonSize.y * __actions.ListAction.Count + 3 * __actions.ListAction.Count);
             _menuPanel.position = _menuCanvas.TransformPoint(__point);
-
-            Debug.Log($"_menuPanel.position: {_menuPanel.position}");
-
-            __actions.ActionsList.Select(p_objectAction =>
+            _menuText.text = p_object.ItemName;
+            __actions.ListAction.Select(p_objectAction =>
             {
                 RectTransform __actionButton = Instantiate(_menuButton).GetComponent<RectTransform>();
 
