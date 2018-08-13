@@ -18,7 +18,7 @@ namespace Main
         public event EventHandler<EnvironmentControllers> onRequestChangeController;
 
         [SerializeField] private EnvironmentControllers _controller;
-        public EnvironmentControllers Controller { get { return _controller; } }
+        public EnvironmentControllers Type { get { return _controller; } }
 
         public virtual void DisableController()
         {

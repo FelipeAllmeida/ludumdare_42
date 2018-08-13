@@ -34,7 +34,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1999574706173730}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.2217937, y: -4.3479943, z: -0.16146475}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -55,6 +55,8 @@ MonoBehaviour:
   _waterFloodVelocity: 0.05
   _mapWidth: 10
   _mapHeight: 5
+  _floodSourceX: 8
+  _floodSourceY: 5
   _doorPrefab: {fileID: 114156200628983146, guid: 1e7438fa71bb27a40aef3b27c4f44afe,
     type: 2}
   _playerPrefab: {fileID: 114370867916558262, guid: 9307b3f1bd4311445afe3c2bb46a34e4,

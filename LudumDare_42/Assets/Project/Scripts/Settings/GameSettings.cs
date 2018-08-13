@@ -4,6 +4,8 @@ using UnityEngine;
 
 public static class GameSettings
 {
+    public const float MENU_ANIMATION_DURATION = 0.25f;
+
     public const float GROUND_SIZE = 10f;
     public const float GROUND_SIZE2 = 5f;
 

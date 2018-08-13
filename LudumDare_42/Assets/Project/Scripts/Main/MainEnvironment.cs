@@ -3,6 +3,7 @@ using Main.Menu;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Vox;
 using UnityEngine;
 
 namespace Main
@@ -26,7 +27,7 @@ namespace Main
         void Start()
         {
             InitializeControllers();
-            ChangeController(CurrentController);
+            Timer.WaitSeconds(.5f, () => ChangeController(CurrentController));
         }
 
         // Update is called once per frame
@@ -43,15 +44,25 @@ namespace Main
             _listReferenceEnvironmentController.ForEach(x =>
             {
                 x.DisableController();
-                _dictEnvironmentController.Add(x.Controller, x);
+                ListenControllerEvents(x);
+                _dictEnvironmentController.Add(x.Type, x);
             });
+        }
+
+        private void ListenControllerEvents(EnvironmentController p_controller)
+        {
+            p_controller.onRequestChangeController -= Controller_OnRequestChangeController;
+            p_controller.onRequestChangeController += Controller_OnRequestChangeController;
+        }
+
+        private void Controller_OnRequestChangeController(object p_source, EnvironmentControllers p_nextController)
+        {
+            ChangeController(p_nextController);
         }
 
         private void ChangeController(EnvironmentControllers p_newController)
         {
             _dictEnvironmentController[CurrentController].DisableController();
-
-
             _dictEnvironmentController[p_newController].IntializeController();
             _dictEnvironmentController[p_newController].EnableController();
 
