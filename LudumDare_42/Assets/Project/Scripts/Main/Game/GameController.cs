@@ -19,13 +19,11 @@ namespace Main.Game
     {
         [Header("Game Configuration")]
         [Range(0f, 1f)]
-        [SerializeField] private float _startEnergy = 1f;
-        [SerializeField] private float _energyGainSpeed = 0.001f;
+        [SerializeField] private float _startEnergy = 0.10f;
 
         [Range(0f, 1f)]
         [SerializeField] private float _startOxygen = 1f;
         [SerializeField] private float _oxygenGainSpeed = 0f;
-        [SerializeField] private float _waterFloodVelocity = 0.05f;
 
         [SerializeField] private int _startMinutesLeft = 5;
         [SerializeField] private int _startSecondsLeft = 0;
@@ -47,17 +45,17 @@ namespace Main.Game
         private Wall[,] _wallsHorizontal;
         private Wall[,] _wallsVertical;
 
-        private float _currentEnergy;
-        private float _currentOxygen;
         private DateTime _timeGameOver;
         private TimeSpan _timeLeft;
+
+        private bool _isStopped = false;
 
         // Use this for initialization
         public override void IntializeController()
         {
             base.IntializeController();
-            _currentEnergy = _startEnergy;
-            _currentOxygen = _startOxygen;
+            GameScore.AddEnergy(_startEnergy);
+            GameScore.AddOxygen(_startOxygen);
             _timeGameOver =  DateTime.Now.Add(new TimeSpan(0, _startMinutesLeft, _startSecondsLeft));
             _timeLeft = _timeLeft = (_timeGameOver.Subtract(DateTime.Now));
             CreateMap();
@@ -67,6 +65,7 @@ namespace Main.Game
         public override void EnableController()
         {
             base.EnableController();
+            _isStopped = false;
             AudioController.Instance.Play(Tags.Background_Game);
             AudioController.Instance.Play(Tags.Ambiente_WaterFlooding);
         }
@@ -75,6 +74,36 @@ namespace Main.Game
         {
             AudioController.Instance.Stop(Tags.Background_Game);
             AudioController.Instance.Stop(Tags.Ambiente_WaterFlooding);
+            
+            if (_grounds != null)
+            {
+                foreach(MapObject mapObject in _grounds)
+                {
+                    mapObject.Clear();
+                }
+            }
+
+            if (_wallsHorizontal != null)
+            {
+                foreach(MapObject mapObject in _wallsHorizontal)
+                {
+                    mapObject.Clear();
+                }
+            }
+
+            if (_wallsVertical != null)
+            {
+                foreach (MapObject mapObject in _wallsVertical)
+                {
+                    mapObject.Clear();
+                }
+            }   
+
+            for (int i = 0; i < transform.childCount; i ++)
+            {
+                Destroy(transform.GetChild(i).gameObject);
+            }
+
             base.DisableController();
         }
 
@@ -83,8 +112,11 @@ namespace Main.Game
         {
             base.UpdateController();
 
-            UpdateMap();
-            UpdatePlayer();
+            if (!_isStopped)
+            {
+                UpdateMap();
+                UpdatePlayer();
+            }
         }
 
         private void UpdateMap()
@@ -100,34 +132,48 @@ namespace Main.Game
                         case Ground.State.IMMERSE:
                             break;
                         case Ground.State.FLOOD_SOURCE:
-                            __ground.UpdateFillAmount(_waterFloodVelocity);
+                            __ground.UpdateFillAmount();
                             break;
                         default:
                             if (HaveWaterComingFromAdjacentRooms(__ground))
-                                __ground.UpdateFillAmount(_waterFloodVelocity);
+                                __ground.UpdateFillAmount();
                             break;
                     }
 
                     if (__ground.CurrentState == Ground.State.FLOOD_SOURCE || HaveWaterComingFromAdjacentRooms(__ground))
-                        __ground.UpdateFillAmount(_waterFloodVelocity);
+                        __ground.UpdateFillAmount();
                 }
             }
         }
 
-        private void UpdateEnergy()
+        private void StopGame()
         {
-            if (_currentEnergy > 0)
-            {
-                _currentEnergy -= _energyGainSpeed * Time.deltaTime;
-
-                if (_currentEnergy < 0)
-                    _currentEnergy = 0;
-            }
+            _isStopped = true;
+            _player.EnableInputs(false);
         }
 
         private void UpdateOxygen()
         {
-            
+            if (_player.IsImmerse)
+            {
+                if (GameScore.CurrentOxygen > 0)
+                {
+                    GameScore.AddOxygen(- _oxygenGainSpeed * Time.deltaTime);
+
+                    if (GameScore.CurrentOxygen <= 0)
+                    {
+                        StopGame();
+                        _player.UI.EnableGameOverPanel(UI.GameOvers.Lost);
+                    }
+                }
+            }
+            else
+            {
+                if (GameScore.CurrentOxygen < 1)
+                {
+                    GameScore.AddOxygen((_oxygenGainSpeed / 4f) * Time.deltaTime);
+                }
+            }
         }
 
         private void UpdateTimeLeft()
@@ -137,6 +183,8 @@ namespace Main.Game
                 _timeLeft = (_timeGameOver.Subtract(DateTime.Now));
                 if (_timeLeft.Ticks <= 0)
                 {
+                    StopGame();
+                    _player.UI.EnableGameOverPanel(UI.GameOvers.Victory);
                 }
             }
         }
@@ -144,10 +192,9 @@ namespace Main.Game
         private void UpdatePlayer()
         {
             UpdateOxygen();
-            UpdateEnergy();
             UpdateTimeLeft();
 
-            _player?.UpdatePlayer(_currentOxygen, _currentEnergy, _timeLeft);
+            _player?.UpdatePlayer(GameScore.CurrentOxygen, GameScore.CurrentEnergy, _timeLeft);
         }
 
         void CreateMap()
@@ -377,6 +424,7 @@ namespace Main.Game
             Vector3 __spawnPosition = new Vector3(GameSettings.GROUND_SIZE2, 1, GameSettings.GROUND_SIZE2);
             _player = Instantiate(_playerPrefab, __spawnPosition, Quaternion.identity, transform).GetComponent<Player>();
             _player.Initialize();
+            _player.UI.onClickGoToMenu += () => { ChangeController(EnvironmentControllers.Menu); };
         }
 
         private void CreateGrounds()

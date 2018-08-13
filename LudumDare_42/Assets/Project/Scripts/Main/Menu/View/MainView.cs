@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Main.Menu
 {
@@ -11,22 +10,20 @@ namespace Main.Menu
         public event Action onClickButtonStart;
 
         [Header("References")]
-        [SerializeField] private Button _buttonStart;
-        [SerializeField] private Button _buttonCredits;
-        [SerializeField] private Button _buttonExit;
+        [SerializeField] private UIButton _buttonStart;
+        [SerializeField] private UIButton _buttonTutorial;
+        [SerializeField] private UIButton _buttonCredits;
+        [SerializeField] private UIButton _buttonExit;
         [Header("Rect Transforms")]
         [SerializeField] private RectTransform _rectTransformLeftPanel;
         [SerializeField] private RectTransform _rectTransformRightPanel;
 
         public override void Initialize()
         {
-            _buttonStart.onClick.RemoveAllListeners();
-            _buttonCredits.onClick.RemoveAllListeners();
-            _buttonExit.onClick.RemoveAllListeners();
-
-            _buttonStart.onClick.AddListener(() => onClickButtonStart?.Invoke());
-            _buttonCredits.onClick.AddListener(() => ChangeView(Views.Credits));
-            _buttonExit.onClick.AddListener(() => Application.Quit());
+            _buttonStart.Initialize(() => onClickButtonStart?.Invoke());
+            _buttonTutorial.Initialize(() => ChangeView(Views.Tutorial));
+            _buttonCredits.Initialize(() => ChangeView(Views.Credits));
+            _buttonExit.Initialize(() => Application.Quit());
         }
 
         protected override void Animate(float p_value)

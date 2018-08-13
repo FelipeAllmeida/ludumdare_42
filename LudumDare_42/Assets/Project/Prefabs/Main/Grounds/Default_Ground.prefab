@@ -107,9 +107,10 @@ GameObject:
   - component: {fileID: 33043647948606830}
   - component: {fileID: 23414756031340814}
   - component: {fileID: 114841372033438132}
+  - component: {fileID: 65423698654598240}
   m_Layer: 0
   m_Name: Cube
-  m_TagString: Untagged
+  m_TagString: Water
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -570,6 +571,18 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1701010711176544}
   m_Mesh: {fileID: 4300002, guid: 681e41ee1260343b395ca58745c94870, type: 3}
+--- !u!65 &65423698654598240
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1693154999083392}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!65 &65942478380553984
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -648,8 +661,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af34174c436808047b52eee5d61b888c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _colliderFlood: {fileID: 65423698654598240}
   _underwaterPivot: {fileID: 1803962874691252}
-  _underwaterPivotNavMeshTag: {fileID: 114841372033438132}
 --- !u!114 &114483548985875504
 MonoBehaviour:
   m_ObjectHideFlags: 1

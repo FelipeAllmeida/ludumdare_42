@@ -38,7 +38,7 @@ namespace Vox
 		[SerializeField]
 		private bool detectExit = true;
 		[SerializeField]
-		private bool detectStay = false;
+		private bool detectStay = true;
 
 		private TriggerEnterDetector _triggerEnterDetector;
 		private TriggerExitDetector _triggerExitDetector;

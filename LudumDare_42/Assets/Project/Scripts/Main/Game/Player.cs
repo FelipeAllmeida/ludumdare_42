@@ -23,17 +23,24 @@ namespace Main.Game
         [SerializeField] private InteractionMenu _interactionMenu;
         [SerializeField] private Unit _unit;
         [SerializeField] private PlayerUI _playerUI;
+        public PlayerUI UI { get { return _playerUI; } }
 
         [SerializeField] private float _cameraSpeed = 0.05f;
 
         private bool _isRightClickMoving = false;
 
+        public bool IsImmerse { get; private set; }
+
 	    // Use this for initialization
 	    public void Initialize()
         {
+            _playerUI.Initialize();
+
             InitializeCommandController();
             InitializeInputManager();
             InitializeInteractionMenu();
+
+            ListenUnitEvents(_unit);
         }
 
         // Update is called once per frame
@@ -46,6 +53,11 @@ namespace Main.Game
             _inputManager?.CheckInput();
 
             CheckCameraInputs();
+        }
+
+        public void EnableInputs(bool p_value)
+        {
+            _inputManager.EnableInputs(p_value);
         }
 
         #region Internal
@@ -63,8 +75,29 @@ namespace Main.Game
         private void InitializeInputManager()
         {
             _inputManager = new InputManager();
-
+            EnableInputs(true);
             ListenInputManagerEvents(_inputManager);
+        }
+
+        private void ListenUnitEvents(Unit p_unit)
+        {
+            p_unit.TriggerDetector.onTriggerEnter = (Collider p_collider) =>
+            {
+                if (p_collider.tag == "Water")
+                    IsImmerse = true;
+            };  
+
+            p_unit.TriggerDetector.onTriggerStay = (Collider p_collider) =>
+            {
+                if (p_collider.tag == "Water")
+                    IsImmerse = true;
+            };
+
+            p_unit.TriggerDetector.onTriggerExit = (Collider p_collider) =>
+            {
+                if (p_collider.tag == "Water")
+                    IsImmerse = false;
+            };
         }
 
         private void ListenInteractionMenuEvents(InteractionMenu p_interactionMenu)
@@ -111,7 +144,7 @@ namespace Main.Game
                     MapItem __mapItem = p_inputInfo.hit.GetComponent<MapItem>();
                     if (__mapItem != null)
                     {
-                        AudioController.Instance.Play(Tags.SFX_Click);
+                        AudioController.Instance.Play(Tags.SFX_Mouse_Click);
                         _interactionMenu.Open(__mapItem);
                     }
                 }

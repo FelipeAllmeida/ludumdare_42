@@ -52,11 +52,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _controller: 1
-  _startEnergy: 1
-  _energyGainSpeed: 0.001
+  _startEnergy: 0.1
   _startOxygen: 1
-  _oxygenGainSpeed: 0
-  _waterFloodVelocity: 0.05
+  _oxygenGainSpeed: 0.2
   _startMinutesLeft: 3
   _startSecondsLeft: 30
   _mapWidth: 10
@@ -80,6 +78,6 @@ MonoBehaviour:
   - spawnPercentage: 0.5
     spawnObject: {fileID: 1297961932586474, guid: 70fef1d2e7e44584599b84093c625f30,
       type: 2}
-  - spawnPercentage: 0.7
+  - spawnPercentage: 0.5
     spawnObject: {fileID: 1483804636868130, guid: aebdd5d1d553a764986966bb723278ca,
       type: 2}

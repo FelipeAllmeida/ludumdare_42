@@ -27,6 +27,11 @@ namespace Main.Game
         {
             transform.position = p_position;
         }
+
+        public virtual void Clear()
+        {
+
+        }
     }
 
 }

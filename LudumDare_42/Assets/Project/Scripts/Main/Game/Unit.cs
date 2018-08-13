@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using Vox;
 
 namespace Main.Game
 {
@@ -9,6 +10,9 @@ namespace Main.Game
     public class Unit : MonoBehaviour
     {
         [SerializeField] private float _range = 0.5f;
+
+        [SerializeField] private TriggerDetector _triggerDetector;
+        public TriggerDetector TriggerDetector { get { return _triggerDetector; } }
 
         private NavMeshAgent _navMeshAgent;
 

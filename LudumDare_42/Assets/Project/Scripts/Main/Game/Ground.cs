@@ -45,23 +45,26 @@ namespace Main.Game
         private TimerNode _timerNode;
 
         private Vector3 _position;
+
+        public float FloodVelocity { get; set; }
         #endregion
 
         #region Methods
         public override void Initialize(int p_x, int p_y)
         {
             base.Initialize(p_x, p_y);
+            FloodVelocity = GameSettings.FLOOD_VELOCITY;
             _navMeshSourceTag = transform.GetChild(2).GetComponent<NavMeshSourceTag>();
             if (isFloodSource) SetState(State.FLOOD_SOURCE);
         }
 
-        public void UpdateFillAmount(float p_floodVelocity)
+        public void UpdateFillAmount()
         {
             switch(CurrentState)
             {
                 case State.FLOOD_SOURCE:
                 case State.FLOODED:
-                    SetFillAmount(_currentFillAmount + (Time.deltaTime * p_floodVelocity));
+                    SetFillAmount(_currentFillAmount + (Time.deltaTime * FloodVelocity));
                     break;
                 case State.DRY:
                 case State.IMMERSE:
@@ -94,6 +97,14 @@ namespace Main.Game
                     _water.SetFillAmount(_currentFillAmount);
                     break;
             }
+        }
+
+        public override void Clear()
+        {
+            base.Clear();
+            _timerNode?.Cancel();
+            onChangeState = null;
+            onMaxPressure = null;
         }
 
         #endregion

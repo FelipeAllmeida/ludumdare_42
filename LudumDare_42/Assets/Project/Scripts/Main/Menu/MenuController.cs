@@ -9,7 +9,8 @@ namespace Main.Menu
     public enum Views
     {
         Main,
-        Credits
+        Credits,
+        Tutorial
     }
 
     public class MenuController : EnvironmentController
@@ -24,7 +25,10 @@ namespace Main.Menu
         {
             base.IntializeController();
 
-            _listReferenceViews.ForEach(x => _dictViews.Add(x.Type, x));
+            if (_dictViews.Count == 0)
+            {
+                _listReferenceViews.ForEach(x => _dictViews.Add(x.Type, x));
+            }
 
             foreach(View view in _dictViews.Values)
             {

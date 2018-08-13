@@ -40,6 +40,12 @@ namespace Main.Game
             _doorItem.SetState(p_state);
         }
 
+        public override void Clear()
+        {
+            base.Clear();
+            onChangeState = null;
+        }
+
         public override void SetPosition(Vector3 p_position)
         {
             base.SetPosition(p_position);

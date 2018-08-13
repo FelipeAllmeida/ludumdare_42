@@ -14,13 +14,14 @@ namespace Internal.Audio
         Background_Menu,
         Background_Game,
 
-        SFX_Click,
+        SFX_Mouse_Click,
         SFX_Interact_Door,
         SFX_Interact_ControlPanel,
         SFX_Interact_MainFrame,
         SFX_Interact_Player,
         SFX_Interact_WaterPump,
-        SFX_Interact_Generator
+        SFX_Interact_Generator,
+        SFX_Mouse_Click_Button
     }
 
     public class AudioController : MonoBehaviour
