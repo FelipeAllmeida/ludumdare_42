@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Main.Game
 {
-    public class Wall : MapObject
+    public abstract class Wall : MapObject
     {
         public enum WallType
         {

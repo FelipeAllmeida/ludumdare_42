@@ -15,4 +15,6 @@ public static class GameSettings
 
     public const float WATER_MIN_HEIGHT = 0.5f;
     public const float WATER_MAX_HEIGHT = 4.25f;
+
+    public static float UI_BAR_SIZE_X = 300f;
 }

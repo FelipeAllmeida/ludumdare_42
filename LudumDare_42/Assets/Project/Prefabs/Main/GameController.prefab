@@ -26,7 +26,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4851053399737684
 Transform:
   m_ObjectHideFlags: 1
@@ -52,16 +52,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _controller: 1
+  _startEnergy: 1
+  _energyGainSpeed: 0.001
+  _startOxygen: 1
+  _oxygenGainSpeed: 0
   _waterFloodVelocity: 0.05
+  _startMinutesLeft: 3
+  _startSecondsLeft: 30
   _mapWidth: 10
   _mapHeight: 5
   _floodSourceX: 8
-  _floodSourceY: 5
+  _floodSourceY: 4
   _doorPrefab: {fileID: 114156200628983146, guid: 1e7438fa71bb27a40aef3b27c4f44afe,
     type: 2}
   _playerPrefab: {fileID: 114370867916558262, guid: 9307b3f1bd4311445afe3c2bb46a34e4,
-    type: 2}
-  _wallPrefab: {fileID: 114901629143086014, guid: ae92b62474e37d04499d562563bf1a59,
     type: 2}
   _listGroundPrefabs:
   - spawnPercentage: 1

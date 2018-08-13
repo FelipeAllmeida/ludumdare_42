@@ -33,7 +33,7 @@ namespace Main
         // Update is called once per frame
         void Update()
         {
-            if (_dictEnvironmentController.ContainsKey(CurrentController))
+            if (_dictEnvironmentController.ContainsKey(CurrentController) && _dictEnvironmentController[CurrentController].IsInitialized)
             {
                 _dictEnvironmentController[CurrentController].UpdateController();
             }

@@ -5,6 +5,8 @@ using Internal;
 using UnityEngine.AI;
 using Vox;
 using Internal.Commands;
+using Main.Game.UI;
+using System;
 
 namespace Main.Game
 {
@@ -17,15 +19,14 @@ namespace Main.Game
         [SerializeField] private Camera _mainCamera;
         [SerializeField] private InteractionMenu _interactionMenu;
         [SerializeField] private Unit _unit;
+        [SerializeField] private PlayerUI _playerUI;
 
         [SerializeField] private float _cameraSpeed = 0.05f;
 
         private bool _isRightClickMoving = false;
 
-        public Camera Camera { get { return _mainCamera; } }
-
 	    // Use this for initialization
-	    void Start ()
+	    public void Initialize()
         {
             InitializeCommandController();
             InitializeInputManager();
@@ -33,8 +34,11 @@ namespace Main.Game
         }
 
         // Update is called once per frame
-        void Update ()
+        public void UpdatePlayer(float p_oxygen, float p_energy, TimeSpan p_timeLeft)
         {
+            _playerUI.OxygenBar.SetFillProgress(p_oxygen);
+            _playerUI.EnergyBar.SetFillProgress(p_energy);
+            _playerUI.Clock.SetClockTime(p_timeLeft);
             _commandQuery.UpdateQuery();
             _inputManager?.CheckInput();
 
@@ -44,7 +48,7 @@ namespace Main.Game
         #region Internal
         private void InitializeInteractionMenu()
         {
-            _interactionMenu.SetCamera(Camera);
+            _interactionMenu.SetCamera(_mainCamera);
             ListenInteractionMenuEvents(_interactionMenu);
         }
 
@@ -106,6 +110,7 @@ namespace Main.Game
 
         private void InputManager_OnMouseRightClick(InputInfo p_inputInfo)
         {
+            if (_interactionMenu.IsOpen) _interactionMenu.Close();
             _isRightClickMoving = true;
             _commandQuery.ClearQuery();
             _commandQuery.AddCommand(new MoveCommand(_unit, p_inputInfo.worldClickPoint, (p_source, p_eventArgs) => _isRightClickMoving = false));

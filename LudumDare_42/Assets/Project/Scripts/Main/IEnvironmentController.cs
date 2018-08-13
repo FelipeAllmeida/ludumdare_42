@@ -20,8 +20,11 @@ namespace Main
         [SerializeField] private EnvironmentControllers _controller;
         public EnvironmentControllers Type { get { return _controller; } }
 
+        public bool IsInitialized { get; internal set; } = false;
+
         public virtual void DisableController()
         {
+            IsInitialized = false;
             gameObject.SetActive(false);
         }
 
@@ -32,7 +35,7 @@ namespace Main
 
         public virtual void IntializeController()
         {
-
+            IsInitialized = true;
         }
 
         public virtual void EnableController()

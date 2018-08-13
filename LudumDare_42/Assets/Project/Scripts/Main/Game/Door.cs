@@ -44,16 +44,15 @@ namespace Main.Game
             else
                 _currentState = State.OPEN;
 
-            float __start = (CurrentState == State.OPEN) ? 1f : 0.2f;
-            float __finish = (CurrentState == State.OPEN) ? 0.2f : 1f;
-
-            _nodeOpenAnimation?.Cancel();
-            _nodeOpenAnimation = Tween.FloatTo(__start, __finish, .25f, EaseType.LINEAR, (float p_value) =>
-            {
-                _trasformPivotDoor.localScale = new Vector3(1f, p_value, 1f);
-            });
+            StartAnimation(CurrentState);
 
             onChangeState?.Invoke(this, new OnChangeStateEventArgs(CurrentState));
+        }
+
+        public void SetState(State p_state)
+        {
+            _currentState = p_state;
+            _trasformPivotDoor.localScale = new Vector3(1f, (p_state == State.OPEN) ? 0.2f : 1f, 1f);
         }
 
         public override void SetPosition(Vector3 p_position)
@@ -106,6 +105,18 @@ namespace Main.Game
             {
                 _listTransformsDoor.ForEach(x => x.transform.localScale = new Vector3(1f, 1f, 0.3333333f));
             }
+        }
+
+        private void StartAnimation(State p_state)
+        {
+            float __start = (p_state == State.OPEN) ? 1f : 0.2f;
+            float __finish = (p_state == State.OPEN) ? 0.2f : 1f;
+
+            _nodeOpenAnimation?.Cancel();
+            _nodeOpenAnimation = Tween.FloatTo(__start, __finish, .25f, EaseType.LINEAR, (float p_value) =>
+            {
+                _trasformPivotDoor.localScale = new Vector3(1f, p_value, 1f);
+            });
         }
     }
 }

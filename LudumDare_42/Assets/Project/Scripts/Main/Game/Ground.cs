@@ -37,6 +37,7 @@ namespace Main.Game
         [SerializeField] private float _startFillAmount;
         [SerializeField] private Water _water;
 
+        private NavMeshSourceTag _navMeshSourceTag;
         private float _currentFillAmount;
 
         private Vector3 _position;
@@ -46,7 +47,7 @@ namespace Main.Game
         public override void Initialize(int p_x, int p_y)
         {
             base.Initialize(p_x, p_y);
-
+            _navMeshSourceTag = transform.GetChild(2).GetComponent<NavMeshSourceTag>();
             if (isFloodSource) SetState(State.FLOOD_SOURCE);
         }
 
@@ -101,6 +102,7 @@ namespace Main.Game
             _currentState = p_state;
 
             _water.SetActive(CurrentState != State.DRY);
+            _navMeshSourceTag.enabled = CurrentState != State.IMMERSE;
 
             onChangeState?.Invoke(this, new OnChangeStateEventArgs(CurrentState, _currentFillAmount));
         }

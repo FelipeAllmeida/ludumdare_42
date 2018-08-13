@@ -7,6 +7,7 @@ namespace Main.Game
     public class Water : MonoBehaviour
     {
         [SerializeField] public GameObject _underwaterPivot;
+
         public void SetActive(bool p_isActive)
         {
             gameObject.SetActive(p_isActive);

@@ -21,6 +21,8 @@ namespace Main.Menu
 
         public override void IntializeController()
         {
+            base.IntializeController();
+
             _listReferenceViews.ForEach(x => _dictViews.Add(x.Type, x));
 
             foreach(View view in _dictViews.Values)
@@ -39,8 +41,6 @@ namespace Main.Menu
                     ChangeView(p_nextView);
                 };
             }
-
-            base.IntializeController();
         }
 
         private void MainView_OnClickButtonStart()
@@ -56,12 +56,14 @@ namespace Main.Menu
 
         public override void DisableController()
         {
-            if (!_dictViews.ContainsKey(_currentView)) return;
-
-            _dictViews[_currentView].Hide(() =>
+            if (_dictViews.ContainsKey(_currentView))
+            {
+                _dictViews[_currentView].Hide(base.DisableController);
+            }
+            else
             {
                 base.DisableController();
-            });
+            }
         }
 
         private void ChangeView(Views p_nextView)

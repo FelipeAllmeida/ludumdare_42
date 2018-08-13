@@ -68,7 +68,7 @@ namespace Main
 
             Vector2 __buttonSize = _menuButton.GetComponent<RectTransform>().sizeDelta;
 
-            _menuPanel.sizeDelta = new Vector2(_menuPanel.sizeDelta.x, __buttonSize.y * __actions.ActionsList.Count);
+            _menuPanel.sizeDelta = new Vector2(_menuPanel.sizeDelta.x, 10f + __buttonSize.y * __actions.ActionsList.Count + 3 * __actions.ActionsList.Count);
             _menuPanel.position = _menuCanvas.TransformPoint(__point);
 
             Debug.Log($"_menuPanel.position: {_menuPanel.position}");
@@ -96,6 +96,8 @@ namespace Main
 
                 b.offsetMax = Vector2.down * 12 * (_menuPanel.childCount - 1);
                 b.offsetMin = Vector2.down * 12 * _menuPanel.childCount;
+
+                b.sizeDelta = new Vector2(90f, 15f);
             });
 
             ActivateContextMenu(true);

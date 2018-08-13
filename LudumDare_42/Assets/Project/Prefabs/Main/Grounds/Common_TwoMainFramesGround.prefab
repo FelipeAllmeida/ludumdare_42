@@ -456,6 +456,7 @@ GameObject:
   - component: {fileID: 4797751642470008}
   - component: {fileID: 33109168943329646}
   - component: {fileID: 23073524700340224}
+  - component: {fileID: 114930645639981454}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -6692,6 +6693,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _underwaterPivot: {fileID: 1034320968142618}
+  _underwaterPivotNavMeshTag: {fileID: 114930645639981454}
+--- !u!114 &114930645639981454
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1255242373909804}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e038bf700cfa444fb16c6ef963be9f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114952131232759450
 MonoBehaviour:
   m_ObjectHideFlags: 1

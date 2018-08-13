@@ -16,17 +16,27 @@ namespace Main.Game
     public class GameController : EnvironmentController
     {
         [Header("Game Configuration")]
+        [Range(0f, 1f)]
+        [SerializeField] private float _startEnergy = 1f;
+        [SerializeField] private float _energyGainSpeed = 0.001f;
+
+        [Range(0f, 1f)]
+        [SerializeField] private float _startOxygen = 1f;
+        [SerializeField] private float _oxygenGainSpeed = 0f;
         [SerializeField] private float _waterFloodVelocity = 0.05f;
+
+        [SerializeField] private int _startMinutesLeft = 3;
+        [SerializeField] private int _startSecondsLeft = 30;
 
         [SerializeField] private int _mapWidth;
         [SerializeField] private int _mapHeight;
+
         [SerializeField] private int _floodSourceX;
         [SerializeField] private int _floodSourceY;
 
         [Header("Prefabs")]
         [SerializeField] private Door _doorPrefab;
         [SerializeField] private Player _playerPrefab;
-        [SerializeField] private Wall _wallPrefab;
 
         [SerializeField] private List<PrefabData> _listGroundPrefabs;
 
@@ -35,10 +45,19 @@ namespace Main.Game
         private Wall[,] _wallsHorizontal;
         private Wall[,] _wallsVertical;
 
+        private float _currentEnergy;
+        private float _currentOxygen;
+        private DateTime _timeGameOver;
+        private TimeSpan _timeLeft;
+
         // Use this for initialization
         public override void IntializeController()
         {
             base.IntializeController();
+            _currentEnergy = _startEnergy;
+            _currentOxygen = _startOxygen;
+            _timeGameOver =  DateTime.Now.Add(new TimeSpan(0, _startMinutesLeft, _startSecondsLeft));
+            _timeLeft = _timeLeft = (_timeGameOver.Subtract(DateTime.Now));
             CreateMap();
             CreatePlayer();
         }
@@ -47,20 +66,16 @@ namespace Main.Game
         public override void UpdateController()
         {
             base.UpdateController();
-            UpdateMap();
-        }
 
-        void CreateMap()
-        {
-            CreateGrounds();
-            CreateWalls();
+            UpdateMap();
+            UpdatePlayer();
         }
 
         private void UpdateMap()
         {
             for (int i = 0; i < _grounds.GetLength(0); i++)
             {
-                for (int j = 0; j < _grounds.GetLength(1); j++) 
+                for (int j = 0; j < _grounds.GetLength(1); j++)
                 {
                     Ground __ground = _grounds[i, j];
 
@@ -70,6 +85,48 @@ namespace Main.Game
                         __ground.UpdateFillAmount(_waterFloodVelocity);
                 }
             }
+        }
+
+        private void UpdateEnergy()
+        {
+            if (_currentEnergy > 0)
+            {
+                _currentEnergy -= _energyGainSpeed * Time.deltaTime;
+
+                if (_currentEnergy < 0)
+                    _currentEnergy = 0;
+            }
+        }
+
+        private void UpdateOxygen()
+        {
+            
+        }
+
+        private void UpdateTimeLeft()
+        {
+            if (_timeLeft.Ticks > 0 )
+            {
+                _timeLeft = (_timeGameOver.Subtract(DateTime.Now));
+                if (_timeLeft.Ticks <= 0)
+                {
+                }
+            }
+        }
+
+        private void UpdatePlayer()
+        {
+            UpdateOxygen();
+            UpdateEnergy();
+            UpdateTimeLeft();
+
+            _player?.UpdatePlayer(_currentOxygen, _currentEnergy, _timeLeft);
+        }
+
+        void CreateMap()
+        {
+            CreateGrounds();
+            CreateWalls();
         }
 
         private void ListenGroundEvents(Ground p_ground)
@@ -237,13 +294,12 @@ namespace Main.Game
         {
             Vector3 __spawnPosition = new Vector3(GameSettings.GROUND_SIZE2, 1, GameSettings.GROUND_SIZE2);
             _player = Instantiate(_playerPrefab, __spawnPosition, Quaternion.identity, transform).GetComponent<Player>();
+            _player.Initialize();
         }
 
         private void CreateGrounds()
         {
             _grounds = new Ground[_mapWidth, _mapHeight];
-
-            int __floodStartX, __floodStartY;
 
             for (int i = 0; i < _mapWidth; i++)
             {
@@ -281,8 +337,10 @@ namespace Main.Game
 
             __ground.name = $"Ground [{p_x}][{p_y}]";
             __ground.isFloodSource = p_startWithFlood;
+
             if (__ground.isFloodSource)
                 Debug.Log($"Flood Source Ground [{p_x}][{p_y}]");
+
             __ground.Initialize(p_x, p_y);
             __ground.SetFillAmount(0f);
             __ground.SetPosition(__spawnPosition);
@@ -296,46 +354,25 @@ namespace Main.Game
             _wallsHorizontal = new Wall[_mapWidth, _mapHeight - 1];
             _wallsVertical = new Wall[_mapWidth - 1, _mapHeight];
 
-            int __maxDoors = Mathf.RoundToInt(_wallsHorizontal.GetLength(0) * _wallsHorizontal.GetLength(1) * 0.95f);
-            int __doorCounter = 0;
-
             for (int i = 0; i < _wallsHorizontal.GetLength(0); i++)
             {
                 for (int j = 0; j < _wallsHorizontal.GetLength(1); j ++)
                 {
-                    bool __hasDoor = false;
-
-                    if (__doorCounter < __maxDoors && UnityEngine.Random.Range(0, 2) <= 1)
-                    {
-                        __doorCounter++;
-                        __hasDoor = true;
-                    }
-
-                    _wallsHorizontal[i, j] = CreateWall(i, j, true, __hasDoor);
+                    _wallsHorizontal[i, j] = CreateWall(i, j, true);
                 }
             }
 
-            __maxDoors = Mathf.RoundToInt(_wallsVertical.GetLength(0) * _wallsVertical.GetLength(1) * 0.95f);
-             __doorCounter = 0;
             for (int i = 0; i < _wallsVertical.GetLength(0); i++)
             {
                 for (int j = 0; j < _wallsVertical.GetLength(1); j++)
                 {
-                    bool __hasDoor = false;
-
-                    if (__doorCounter < __maxDoors && UnityEngine.Random.Range(0, 2) <= 1)
-                    {
-                        __doorCounter++;
-                        __hasDoor = true;
-                    }
-
-                    _wallsVertical[i, j] = CreateWall(i, j, false, __hasDoor);
+                    _wallsVertical[i, j] = CreateWall(i, j, false);
                 }
             }
 
         }
 
-        private Wall CreateWall(int p_x, int p_y, bool p_isHorizontal, bool p_isDoor)
+        private Wall CreateWall(int p_x, int p_y, bool p_isHorizontal)
         {
             Vector3 __spawnPosition;
             Vector3 __scale;
@@ -359,13 +396,15 @@ namespace Main.Game
                 __scale = new Vector3(1f, 5f, GameSettings.WALL_WIDTH);
             }
 
-            Wall __wall = Instantiate(p_isDoor ? _doorPrefab : _wallPrefab, transform).GetComponent<Wall>();
+            Wall __wall = Instantiate(_doorPrefab, transform).GetComponent<Wall>();
 
-            if (p_isDoor)
+            switch(__wall.Type)
             {
-                ListenDoorEvents(__wall as Door);
+                case Wall.WallType.DOOR:
+                    (__wall as Door).SetState((UnityEngine.Random.Range(0, 2) == 1) ? Door.State.OPEN : Door.State.CLOSED);
+                    ListenDoorEvents(__wall as Door);
+                    break;
             }
-
             __wall.name = $"Wall {(p_isHorizontal?"Horizontal":"Vertical")} [{p_x}][{p_y}]";
             __wall.Initialize(p_x, p_y);
             __wall.SetLocalScale(__scale);
