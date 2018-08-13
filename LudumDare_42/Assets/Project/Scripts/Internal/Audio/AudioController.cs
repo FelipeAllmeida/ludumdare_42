@@ -39,11 +39,15 @@ namespace Internal.Audio
 
         public static AudioController Instance { get; private set; }
 
-	    // Use this for initialization
-	    void Start ()
-        {
-            Instance = this;
+        // Use this for initialization
 
+        void Awake()
+        {
+            Instance = this;   
+        }
+
+        void Start ()
+        {
             _listReferenceAudioTriggers.ForEach(x => _dictAudioTriggers.Add(x.tag, x));
         }
 	
