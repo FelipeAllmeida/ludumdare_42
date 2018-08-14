@@ -98,7 +98,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1066399417210542
 GameObject:
   m_ObjectHideFlags: 1
@@ -907,6 +907,24 @@ GameObject:
   - component: {fileID: 114903030513771668}
   m_Layer: 0
   m_Name: CreditsButton
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &1789590270731390
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 224153602445034674}
+  - component: {fileID: 222244002952750462}
+  - component: {fileID: 114860184236293424}
+  - component: {fileID: 114930956825897254}
+  m_Layer: 0
+  m_Name: Email
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3000,6 +3018,39 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Mouse Right Click - Walk
+--- !u!114 &114860184236293424
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1789590270731390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.9098039, g: 0.8980392, b: 0.58431375, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 20
+    m_FontStyle: 1
+    m_BestFit: 0
+    m_MinSize: 2
+    m_MaxSize: 40
+    m_Alignment: 4
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: link.epkrs@gmail.com
 --- !u!114 &114869673870890830
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3271,7 +3322,26 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: link.epkrs@gmail.com
+  m_Text: bhdamiati@gmail.com
+--- !u!114 &114930956825897254
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1789590270731390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1679637790, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!114 &114935591315733186
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3613,6 +3683,12 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1593503101640592}
+--- !u!222 &222244002952750462
+CanvasRenderer:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1789590270731390}
 --- !u!222 &222251284798213312
 CanvasRenderer:
   m_ObjectHideFlags: 1
@@ -3960,7 +4036,7 @@ RectTransform:
   - {fileID: 224029022399262246}
   - {fileID: 224581808629794832}
   - {fileID: 224084171063177418}
-  - {fileID: 224512651328245020}
+  - {fileID: 224153602445034674}
   m_Father: {fileID: 224897091735079202}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3969,6 +4045,24 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -150, y: 0}
   m_Pivot: {x: 0, y: 0.5}
+--- !u!224 &224153602445034674
+RectTransform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1789590270731390}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 224144946481177508}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 530.09766, y: -20}
+  m_SizeDelta: {x: 239.80469, y: 30}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224157940830315416
 RectTransform:
   m_ObjectHideFlags: 1
@@ -4040,13 +4134,14 @@ RectTransform:
   - {fileID: 224402904579131312}
   - {fileID: 224465363730299844}
   - {fileID: 224415038393913734}
+  - {fileID: 224512651328245020}
   m_Father: {fileID: 224163882828054558}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -400, y: 0}
+  m_SizeDelta: {x: -150, y: 0}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!224 &224178855567566030
 RectTransform:
@@ -4359,8 +4454,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 86.484375, y: -20}
-  m_SizeDelta: {x: 172.96875, y: 30}
+  m_AnchoredPosition: {x: 87.77344, y: -20}
+  m_SizeDelta: {x: 175.54688, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224415038393913734
 RectTransform:
@@ -4377,8 +4472,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 367.8125, y: -20}
-  m_SizeDelta: {x: 64.375, y: 30}
+  m_AnchoredPosition: {x: 374.2578, y: -20}
+  m_SizeDelta: {x: 66.953125, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224442273172825998
 RectTransform:
@@ -4432,8 +4527,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 254.29688, y: -20}
-  m_SizeDelta: {x: 152.65625, y: 30}
+  m_AnchoredPosition: {x: 258.16406, y: -20}
+  m_SizeDelta: {x: 155.23438, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224473543951028400
 RectTransform:
@@ -4481,13 +4576,13 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 224144946481177508}
+  m_Father: {fileID: 224171442395083966}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 530.09766, y: -20}
-  m_SizeDelta: {x: 239.80469, y: 30}
+  m_AnchoredPosition: {x: 531.3672, y: -20}
+  m_SizeDelta: {x: 237.26562, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224523386257139428
 RectTransform:
