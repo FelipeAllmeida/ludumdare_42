@@ -41,6 +41,16 @@ namespace Internal.Commands
             return CommandType;
         }
 
+        public virtual void Resume()
+        {
+
+        }
+
+        public virtual void Pause()
+        {
+
+        }
+
         public virtual void AUpdate()
         {
 

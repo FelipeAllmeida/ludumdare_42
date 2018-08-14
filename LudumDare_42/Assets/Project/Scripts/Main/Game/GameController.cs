@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Main.Game.Itens;
 using Internal.Audio;
+using System.Diagnostics;
 
 namespace Main.Game
 {
@@ -45,8 +46,8 @@ namespace Main.Game
         private Wall[,] _wallsHorizontal;
         private Wall[,] _wallsVertical;
 
-        private DateTime _timeGameOver;
-        private TimeSpan _timeLeft;
+        private Stopwatch _timeCounter;
+        private TimeSpan _timeLimit;
 
         private bool _isStopped = false;
 
@@ -54,10 +55,13 @@ namespace Main.Game
         public override void IntializeController()
         {
             base.IntializeController();
+
+            _timeCounter = new Stopwatch();
+            _timeLimit = new TimeSpan(0, _startMinutesLeft, _startSecondsLeft);
+
             GameScore.AddEnergy(_startEnergy);
             GameScore.AddOxygen(_startOxygen);
-            _timeGameOver =  DateTime.Now.Add(new TimeSpan(0, _startMinutesLeft, _startSecondsLeft));
-            _timeLeft = _timeLeft = (_timeGameOver.Subtract(DateTime.Now));
+
             CreateMap();
             CreatePlayer();
         }
@@ -66,6 +70,7 @@ namespace Main.Game
         {
             base.EnableController();
             _isStopped = false;
+            _timeCounter.Start();
             AudioController.Instance.Play(Tags.Background_Game);
             AudioController.Instance.Play(Tags.Ambiente_WaterFlooding);
         }
@@ -146,10 +151,38 @@ namespace Main.Game
             }
         }
 
-        private void StopGame()
+        private void Resume()
         {
+            if (_grounds != null)
+            {
+                foreach (var ground in _grounds)
+                {
+                    ground.Resume();
+                }
+            }
+
+            _player.UI.EnablePausePanel(false);
+            _timeCounter.Start();
+            _isStopped = false;
+            _player.EnableInputs(false);
+            _player.ResumeCurrentCommand();
+        }
+
+        private void Pause()
+        {
+            if (_grounds != null)
+            {
+                foreach(var ground in _grounds)
+                {
+                    ground.Pause();
+                }
+            }
+
+            _timeCounter.Stop();
             _isStopped = true;
             _player.EnableInputs(false);
+            _player.UI.EnablePausePanel(true);
+            _player.PauseCurrentCommand();
         }
 
         private void UpdateOxygen()
@@ -162,8 +195,8 @@ namespace Main.Game
 
                     if (GameScore.CurrentOxygen <= 0)
                     {
-                        StopGame();
-                        _player.UI.EnableGameOverPanel(UI.GameOvers.Lost);
+                        Pause();
+                        _player.UI.EnableGameOverPanel(UI.GameOverType.Lost);
                     }
                 }
             }
@@ -176,25 +209,21 @@ namespace Main.Game
             }
         }
 
-        private void UpdateTimeLeft()
+        private void UpdateTimeCounter()
         {
-            if (_timeLeft.Ticks > 0 )
+            if (_timeLimit.Ticks <= _timeCounter.ElapsedTicks)
             {
-                _timeLeft = (_timeGameOver.Subtract(DateTime.Now));
-                if (_timeLeft.Ticks <= 0)
-                {
-                    StopGame();
-                    _player.UI.EnableGameOverPanel(UI.GameOvers.Victory);
-                }
+                Pause();
+                _player.UI.EnableGameOverPanel(UI.GameOverType.Victory);
             }
         }
 
         private void UpdatePlayer()
         {
             UpdateOxygen();
-            UpdateTimeLeft();
+            UpdateTimeCounter();
 
-            _player?.UpdatePlayer(GameScore.CurrentOxygen, GameScore.CurrentEnergy, _timeLeft);
+            _player?.UpdatePlayer(GameScore.CurrentOxygen, GameScore.CurrentEnergy, _timeLimit.Subtract(_timeCounter.Elapsed));
         }
 
         void CreateMap()
@@ -327,10 +356,10 @@ namespace Main.Game
             }
             catch (System.Exception e)
             {
-                Debug.Log($"x: {p_ground.X} | y: {p_ground.Y}");
-                Debug.Log($"Vertical: {_wallsVertical.GetLength(0)} - {_wallsVertical.GetLength(1)}");
-                Debug.Log($"Horizontal: {_wallsHorizontal.GetLength(0)} - {_wallsHorizontal.GetLength(1)}");
-                Debug.LogError(e);
+                UnityEngine.Debug.Log($"x: {p_ground.X} | y: {p_ground.Y}");
+                UnityEngine.Debug.Log($"Vertical: {_wallsVertical.GetLength(0)} - {_wallsVertical.GetLength(1)}");
+                UnityEngine.Debug.Log($"Horizontal: {_wallsHorizontal.GetLength(0)} - {_wallsHorizontal.GetLength(1)}");
+                UnityEngine.Debug.LogError(e);
             }
         }
 
@@ -380,10 +409,10 @@ namespace Main.Game
             }
             catch(System.Exception e)
             {
-                Debug.Log($"x: {p_ground.X} | y: {p_ground.Y}");
-                Debug.Log($"Vertical: {_wallsVertical.GetLength(0)} - {_wallsVertical.GetLength(1)}");
-                Debug.Log($"Horizontal: {_wallsHorizontal.GetLength(0)} - {_wallsHorizontal.GetLength(1)}");
-                Debug.LogError(e);
+                UnityEngine.Debug.Log($"x: {p_ground.X} | y: {p_ground.Y}");
+                UnityEngine.Debug.Log($"Vertical: {_wallsVertical.GetLength(0)} - {_wallsVertical.GetLength(1)}");
+                UnityEngine.Debug.Log($"Horizontal: {_wallsHorizontal.GetLength(0)} - {_wallsHorizontal.GetLength(1)}");
+                UnityEngine.Debug.LogError(e);
             }
         }
 
@@ -393,7 +422,7 @@ namespace Main.Game
             {
                 if (p_wall.Y >= 0 && _grounds[p_wall.X, p_wall.Y].CurrentState == Ground.State.IMMERSE)
                 {
-                    if (p_wall.Y < _grounds.GetLength(1) - 1 && _grounds[p_wall.X, p_wall.Y + 1 ].CurrentState == Ground.State.DRY)
+                    if (p_wall.Y < _grounds.GetLength(1) - 1 && _grounds[p_wall.X, p_wall.Y + 1].CurrentState == Ground.State.DRY)
                         _grounds[p_wall.X, p_wall.Y + 1].SetFillAmount(0.01f);
                 }
 
@@ -421,10 +450,60 @@ namespace Main.Game
 
         private void CreatePlayer()
         {
-            Vector3 __spawnPosition = new Vector3(GameSettings.GROUND_SIZE2, 1, GameSettings.GROUND_SIZE2);
+            int __randomX = UnityEngine.Random.Range(0, _mapWidth - 1);
+            int __randomY = UnityEngine.Random.Range(0, _mapHeight - 1);
+
+            Vector3 __spawnPosition = new Vector3(
+                GameSettings.GROUND_SIZE2 + (GameSettings.GROUND_SIZE * __randomX) + (GameSettings.WALL_SIZE * __randomX), 
+                1f,
+                GameSettings.GROUND_SIZE2 + (GameSettings.GROUND_SIZE * __randomY) + (GameSettings.WALL_SIZE * __randomY));
+
             _player = Instantiate(_playerPrefab, __spawnPosition, Quaternion.identity, transform).GetComponent<Player>();
+
             _player.Initialize();
-            _player.UI.onClickGoToMenu += () => { ChangeController(EnvironmentControllers.Menu); };
+
+            _player.onPause -= Player_OnPause;
+            _player.onPause += Player_OnPause;
+
+            _player.UI.onGameOverFinish -= UI_OnGameOverFinish; 
+            _player.UI.onGameOverFinish += UI_OnGameOverFinish;
+
+            _player.UI.onPauseFinish -= UI_PauseFinish;
+            _player.UI.onPauseFinish += UI_PauseFinish;
+        }
+
+        private void Player_OnPause()
+        {
+            Pause();
+        }
+
+        private void UI_OnGameOverFinish(UI.GameOverOptions p_options)
+        {
+            switch(p_options)
+            {
+                case UI.GameOverOptions.Menu:
+                    ChangeController(EnvironmentControllers.Menu);
+                    break;
+                case UI.GameOverOptions.Exit:
+                    Application.Quit();
+                    break;
+            }
+        }
+
+        private void UI_PauseFinish(UI.PauseOptions p_options)
+        {
+            switch(p_options)
+            {
+                case UI.PauseOptions.Menu:
+                    ChangeController(EnvironmentControllers.Menu);
+                    break;
+                case UI.PauseOptions.Resume:
+                    Resume();
+                    break;
+                case UI.PauseOptions.Exit:
+                    Application.Quit();
+                    break;
+            }
         }
 
         private void CreateGrounds()

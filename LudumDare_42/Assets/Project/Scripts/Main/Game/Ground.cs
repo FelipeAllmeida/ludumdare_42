@@ -99,6 +99,18 @@ namespace Main.Game
             }
         }
 
+        public override void Resume()
+        {
+            _timerNode?.Resume();
+            base.Resume();
+        }
+
+        public override void Pause()
+        {
+            _timerNode?.Pause();
+            base.Pause();
+        }
+
         public override void Clear()
         {
             base.Clear();

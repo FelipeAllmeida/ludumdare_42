@@ -7,21 +7,17 @@ using UnityEngine.UI;
 
 namespace Main.Game.UI
 {
-    public enum GameOvers
-    {
-        Victory,
-        Lost
-    }
+
     public class PlayerUI : MonoBehaviour
     {
-        public event Action onClickGoToMenu;
+        public event Action<GameOverOptions> onGameOverFinish;
+        public event Action<PauseOptions> onPauseFinish;
 
         [Header("References")]
-        [SerializeField] private GameObject _objectGameOverPanel;
-        [SerializeField] private Text _textHeaderGameOver;
-        [SerializeField] private Text _textBodyGameOver;
-        [SerializeField] private UIButton _buttonGoBackToMenu;
-        [SerializeField] private UIButton _buttonExit;
+
+        [SerializeField] private GameOverPanel _gameOverPanel;
+        [SerializeField] private PausePanel _pausePanel;
+
         [SerializeField] private UIBarObject _energyBar;
         [SerializeField] private UIBarObject _oxygenBar;
         [SerializeField] private UIClockObject _clockObject;
@@ -32,32 +28,44 @@ namespace Main.Game.UI
 
         public void Initialize()
         {
-            _buttonGoBackToMenu.Initialize(() =>
-            {
-                onClickGoToMenu?.Invoke();
-            });
-            _buttonExit.Initialize(() => Application.Quit());
+            _gameOverPanel.Initialize();
+            _pausePanel.Initialize();
+
+            ListenEvents();
         }
 
-        public void EnableGameOverPanel(GameOvers p_gameOver)
+        public void EnableGameOverPanel(GameOverType p_gameOver)
         {
-            switch(p_gameOver)
-            {
-                case GameOvers.Victory:
-                    _textHeaderGameOver.text = "Victory!";
-                    _textBodyGameOver.text = "Congratulations, you were able to survive long enough to be rescued!";
-                    break;
-                case GameOvers.Lost:
-                    _textHeaderGameOver.text = "Game Over :/";
-                    _textBodyGameOver.text = "You weren't able to survive long enough to be rescued.";
-                    break;
-            }
-            _objectGameOverPanel.SetActive(true);
+            _gameOverPanel.Enable(true, p_gameOver);
+        }
+
+        public void EnablePausePanel(bool p_value)
+        {
+            _pausePanel.Enable(p_value);
         }
 
         public void DisableGameOverPanel()
         {
-            _objectGameOverPanel.SetActive(false);
+            _gameOverPanel.Enable(false);
+        }
+
+        private void ListenEvents()
+        {
+            _gameOverPanel.onClick -= GameOverPanel_OnClick;
+            _gameOverPanel.onClick += GameOverPanel_OnClick;
+
+            _pausePanel.onClick -= PausePanel_OnClick;
+            _pausePanel.onClick += PausePanel_OnClick;
+        }
+
+        private void GameOverPanel_OnClick(GameOverOptions p_options)
+        {
+            onGameOverFinish?.Invoke(p_options);
+        }
+
+        private void PausePanel_OnClick(PauseOptions p_options)
+        {
+            onPauseFinish?.Invoke(p_options);
         }
     }
 }

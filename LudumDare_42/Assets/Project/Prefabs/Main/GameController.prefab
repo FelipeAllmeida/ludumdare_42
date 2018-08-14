@@ -55,7 +55,7 @@ MonoBehaviour:
   _startEnergy: 0.1
   _startOxygen: 1
   _oxygenGainSpeed: 0.2
-  _startMinutesLeft: 3
+  _startMinutesLeft: 2
   _startSecondsLeft: 30
   _mapWidth: 10
   _mapHeight: 5

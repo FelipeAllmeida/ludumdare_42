@@ -29,10 +29,15 @@ namespace Main.Game
 
         public ItemState CurrentState { get { return _doorItem.State; } }
 
+        public override void Initialize(int p_x, int p_y)
+        {
+            base.Initialize(p_x, p_y);
+            ListenEvents();
+        }
+
         public override void ForceInteract()
         {
             _doorItem.Interact();
-            onChangeState?.Invoke(this, new OnChangeStateEventArgs(CurrentState));
         }
 
         public void SetState(ItemState p_state)
@@ -96,6 +101,17 @@ namespace Main.Game
             {
                 _listTransformsDoor.ForEach(x => x.transform.localScale = new Vector3(1f, 1f, 0.3333333f));
             }
+        }
+
+        private void ListenEvents()
+        {
+            _doorItem.onChangeState -= DoorItem_OnChangeState;
+            _doorItem.onChangeState += DoorItem_OnChangeState;
+        }
+
+        private void DoorItem_OnChangeState(object p_source, Itens.OnChangeStateEventArgs p_eventArgs)
+        {
+            onChangeState?.Invoke(this, new OnChangeStateEventArgs(p_eventArgs.State));
         }
 
     }

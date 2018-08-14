@@ -15,6 +15,8 @@ namespace Main.Game
     [RequireComponent(typeof(InteractionMenu))]
     public class Player : MonoBehaviour
     {
+        public event Action onPause;
+
         private CommandQuery _commandQuery;
         private InputManager _inputManager;
 
@@ -40,6 +42,8 @@ namespace Main.Game
             InitializeInputManager();
             InitializeInteractionMenu();
 
+            ResetCameraPosition(true);
+
             ListenUnitEvents(_unit);
         }
 
@@ -53,11 +57,22 @@ namespace Main.Game
             _inputManager?.CheckInput();
 
             CheckCameraInputs();
+            CheckInputs();
         }
 
         public void EnableInputs(bool p_value)
         {
             _inputManager.EnableInputs(p_value);
+        }
+
+        public void ResumeCurrentCommand()
+        {
+            _commandQuery.Resume();
+        }
+
+        public void PauseCurrentCommand()
+        {
+            _commandQuery.Pause();
         }
 
         #region Internal
@@ -169,6 +184,14 @@ namespace Main.Game
             }
         }
 
+        private void ResetCameraPosition(bool p_immediatly = false)
+        {
+            if (p_immediatly)
+                _mainCamera.transform.position = new Vector3(_unit.transform.position.x, _mainCamera.transform.position.y, _unit.transform.position.z - 16f);
+            else
+                _mainCamera.transform.position = Vector3.Lerp(_mainCamera.transform.position, new Vector3(_unit.transform.position.x, _mainCamera.transform.position.y, _unit.transform.position.z - 16f), Time.deltaTime * 2f);
+        }
+
         private void CheckCameraInputs()
         {
             Vector3 __cameraMoveOffset = Vector3.zero;
@@ -192,6 +215,19 @@ namespace Main.Game
             }
 
             _mainCamera.transform.position = Vector3.Lerp(_mainCamera.transform.position, _mainCamera.transform.position + __cameraMoveOffset, _cameraSpeed);
+        }
+
+        private void CheckInputs()
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                onPause?.Invoke();
+            }
+
+            if (Input.GetKey(KeyCode.Space))
+            {
+                ResetCameraPosition();
+            }
         }
         #endregion
     }

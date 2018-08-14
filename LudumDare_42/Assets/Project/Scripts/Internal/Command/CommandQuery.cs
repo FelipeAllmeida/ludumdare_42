@@ -27,6 +27,22 @@ namespace Internal.Commands
 
         [SerializeField] private List<Command> _listCommands;
 
+        public void Resume()
+        {
+            if (_listCommands.Count > 0)
+            {
+                _listCommands[0]?.Resume();
+            }
+        }
+
+        public void Pause()
+        {
+            if (_listCommands.Count > 0)
+            {
+                _listCommands[0]?.Pause();
+            }
+        }
+
         public void UpdateQuery()
         {
             if (_listCommands.Count > 0)

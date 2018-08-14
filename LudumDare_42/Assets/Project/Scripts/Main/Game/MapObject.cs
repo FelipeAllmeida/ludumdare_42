@@ -28,6 +28,16 @@ namespace Main.Game
             transform.position = p_position;
         }
 
+        public virtual void Resume()
+        {
+
+        }
+
+        public virtual void Pause()
+        {
+
+        }
+
         public virtual void Clear()
         {
 

@@ -301,16 +301,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114323195032908670, guid: b4f7341029832c548bcdfbe64e72bea2,
-        type: 2}
-      propertyPath: _startSecondsLeft
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 114323195032908670, guid: b4f7341029832c548bcdfbe64e72bea2,
-        type: 2}
-      propertyPath: _startMinutesLeft
-      value: 2
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b4f7341029832c548bcdfbe64e72bea2, type: 2}
   m_IsPrefabParent: 0

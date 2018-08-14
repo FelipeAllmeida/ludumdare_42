@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Main.Game.Itens
@@ -18,11 +19,15 @@ namespace Main.Game.Itens
         public ItemState State { get { return _state; } }
 
         [SerializeField] private string _itemName;
+
+        public event EventHandler<OnChangeStateEventArgs> onChangeState;
+
         public string ItemName { get { return _itemName; } }
 
         public virtual void Interact()
         {
             _state = (State == ItemState.Disabled) ? ItemState.Enabled : ItemState.Disabled;
+            onChangeState?.Invoke(this, new OnChangeStateEventArgs(_state));
         }
 
         public virtual void SetState(ItemState p_state)

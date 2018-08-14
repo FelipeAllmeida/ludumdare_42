@@ -30,6 +30,18 @@ namespace Internal.Commands
             return Commands.MOVE;
         }
 
+        public override void Resume()
+        {
+            base.Resume();
+            _actor.GetNavMeshAgent().isStopped = false;
+        }
+
+        public override void Pause()
+        {
+            base.Pause();
+            _actor.GetNavMeshAgent().isStopped = true;
+        }
+
         public void SetDestination(Vector3 p_destination)
         {
             _targetPosition = p_destination;
