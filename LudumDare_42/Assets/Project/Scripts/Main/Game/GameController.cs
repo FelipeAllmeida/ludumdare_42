@@ -161,7 +161,6 @@ namespace Main.Game
                 }
             }
 
-            _player.UI.EnablePausePanel(false);
             _timeCounter.Start();
             _isStopped = false;
             _player.EnableInputs(false);
@@ -181,7 +180,6 @@ namespace Main.Game
             _timeCounter.Stop();
             _isStopped = true;
             _player.EnableInputs(false);
-            _player.UI.EnablePausePanel(true);
             _player.PauseCurrentCommand();
         }
 
@@ -475,6 +473,7 @@ namespace Main.Game
         private void Player_OnPause()
         {
             Pause();
+            _player.UI.EnablePausePanel(true);
         }
 
         private void UI_OnGameOverFinish(UI.GameOverOptions p_options)
@@ -498,6 +497,7 @@ namespace Main.Game
                     ChangeController(EnvironmentControllers.Menu);
                     break;
                 case UI.PauseOptions.Resume:
+                    _player.UI.EnablePausePanel(false);
                     Resume();
                     break;
                 case UI.PauseOptions.Exit:
